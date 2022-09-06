@@ -6,7 +6,7 @@ In order to prove a formula in the predicate calculus by resolution, we
 
 2. Put the negated formula into CNF, by doing the following:
 
-	1. Get rid of all $\rightarrow$ operators.
+	1. Get rid of all $\rightarrow$ operators ($A \rightarrow B \equals \neg (A \or B)$)
 	2. Push the $\neg$ operators in as far as possible.
 	3. Rename variables as necessary (see the step below).
 	4. Move all of the quantifiers to the left (the outside) of the expression using the following rules (where ${\rm Q}$ is either $\forall$ or $\exists$, and $G$ is a formula that does not contain $x$):
