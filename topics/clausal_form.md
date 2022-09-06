@@ -1,8 +1,11 @@
-Clausal Form for Predicate Calculus Formulas
+# Clausal Form for Predicate Calculus Formulas
+
 In order to prove a formula in the predicate calculus by resolution, we
 
-	1. Negate the formula.
+	1. Negate the formula;
+
 	2. Put the negated formula into CNF, by doing the following:
+
 		1. Get rid of all $\rightarrow$ operators.
 		2. Push the $\neg$ operators in as far as possible.
 		3. Rename variables as necessary (see the step below).
@@ -40,8 +43,6 @@ In order to prove a formula in the predicate calculus by resolution, we
 
 	The remaining formula (the matrix) is put in CNF by moving any $\wedge$ operators outside of any $\vee$ operations.
 	Finally, the CNF formula is written in clausal format by writing each conjunct as a set of literals (a clause), and the whole formula as a set clauses (the clause set).
-
-</ol>
 
 For example, if we begin with the proposition, $\exists x \; \forall y \; y
 < x \rightarrow \forall y \; \exists x \; y < x$, we have:
