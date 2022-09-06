@@ -8,7 +8,7 @@ In order to prove a formula in the predicate calculus by resolution, we
 
 	1. Get rid of all $\rightarrow$ operators 
 <p align="center">
-$r = \frac{n}{T} = \int_{0}^{T} \rho(\tau) d\tau$
+$\rightarrow$
 </p>
 	($A \rightarrow B \equals \neg (A \or B)$)
 
