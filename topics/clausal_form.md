@@ -10,6 +10,7 @@ In order to prove a formula in the predicate calculus by resolution, we
 	<p align="center">
 		$ \rightarrow $
 	</p>
+	($A \rightarrow B \equals \neg (A \or B)$)
 
 	2. Push the $\neg$ operators in as far as possible.
 	3. Rename variables as necessary (see the step below).
