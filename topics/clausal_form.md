@@ -7,9 +7,9 @@ In order to prove a formula in the predicate calculus by resolution, we
 2. Put the negated formula into CNF, by doing the following:
 
 	1. Get rid of all $\rightarrow$ operators 
-	<p align="center">
-		$ \rightarrow $
-	</p>
+<p align="center">
+$r = \frac{n}{T} = \int_{0}^{T} \rho(\tau) d\tau$
+</p>
 	($A \rightarrow B \equals \neg (A \or B)$)
 
 	2. Push the $\neg$ operators in as far as possible.
