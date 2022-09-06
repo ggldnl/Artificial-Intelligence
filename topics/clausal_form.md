@@ -8,7 +8,7 @@ In order to prove a formula in the predicate calculus by resolution, we
 
 	1. Get rid of all $\rightarrow$ operators 
 <p align="center">
-$A \rightarrow B \equiv \neg (A \or B)$
+$A \rightarrow B \equiv \neg (A \vee B)$
 </p>
 	($A \rightarrow B \equals \neg (A \or B)$)
 
