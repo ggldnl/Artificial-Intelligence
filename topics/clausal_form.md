@@ -8,7 +8,6 @@ In order to prove a formula in the predicate calculus by resolution, we
 
 	1. Get rid of all $\rightarrow$ operators 
 	<p align="center">
-		$\left \langle r \right \rangle = \frac{\left \langle n \right \rangle}{T} = \frac{1}{T}\int_{0}^{T}r(t) dt$
 		$ A \rightarrow B \neg (A \or B)$
 	</p>
 
