@@ -1,7 +1,7 @@
 
-rows = 4
-cols = 4
-diagonal_adj = False
+rows = 10
+cols = 10
+diagonal_adj = True
 
 if __name__ == '__main__':
 
