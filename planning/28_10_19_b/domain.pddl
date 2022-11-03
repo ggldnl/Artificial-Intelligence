@@ -1,39 +1,52 @@
 (define (domain IT_domain)
-	
+
 	(:requirements :strips)
-	
-	(:predicates 
-		(at ?what ?where) ; check if the entity ?what (agent/object) is at ?where
-		(valid ?agent ?cell) ; check if the ?agent can stay in ?cell
-		(adj ?cell1 ?cell2)	; check if ?cell1 and ?cell2 are adjacent 
-		(free ?agent) ; agents can only carry one object at a time
-		(carrying ?agent ?object) ; check if the ?agent is carrying ?object 
+
+	(:predicates
+		(agent ?who)
+		(object ?what)
+		(cell ?what)
+
+		; agents
+		(at ?who ?where)
+		(free_hands ?agent)
+
+		; cells
+		(valid ?agent ?cell)
+		(adj ?cell1 ?cell2)
+		(empty ?cell)
 	)
-	
+
 	(:action move
 		:parameters (?agent ?from ?to)
-		:precondition (at ?agent ?from) (valid ?agent ?to)
-		:effect (at ?agent ?to) (not (at ?agent ?from))
-	)
-
-	(:action pick
-		:parameters (?agent ?object ?from)
-		:precondition ( and
-			(at ?object ?from) (at ?agent ?from) (free ?agent)
+		:precondition (and 
+			(agent ?agent) (cell ?from) (cell ?to)
+			(at ?agent ?from) (valid ?agent ?to) (adj ?from ?to)
 		)
-		:effect ( and
-			(not (at ?object ?from)) (not (free ?agent)) (carrying ?agent ?object)
+		:effect (and 
+			(at ?agent ?to) (not (at ?agent ?from))
+			(not (empty ?to))
 		)
 	)
 
-	(:action drop
-		:parameters (?agent ?object ?where)
-		:precondition ( and
-			(at ?agent ?where) (carrying ?agent ?object) (not (free ?agent))
+	(:action move_grab
+		:parameters (?agent ?what ?from ?to)
+		:precondition (and 
+			(agent ?agent) (cell ?from) (cell ?to)
+			(at ?agent ?from) (valid ?agent ?to) (adj ?from ?to)
+			(free_hands ?agent) (not (empty ?to)) 
 		)
-		:effect (and
-			(at ?object ?where) (free ?agent) (not (carrying ?agent ?object))
+		:effect (and 
+			(not (at ?agent ?from)) (at ?agent ?to) 
+			(not (free_hands ?agent))
 		)
 	)
 
+	(:action move_drop
+		:parameters (?agent ?what ?from ?to)
+		:precondition (and 
+			(agent ?agent) (object ?what) (cell ?where)
+		)
+		:effect (and )
+	)
 )
