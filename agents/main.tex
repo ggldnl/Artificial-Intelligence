@@ -208,6 +208,15 @@ Goals alone are not enough to generate high-quality behaviour in most environmen
 
 We have already seen that a performance measure assigns a score to any given sequence of environment states, so it can easily distinguish between more and less desirable ways of leading the agent to its goal. An agent’s utility function is essentially an internalization of the performance measure. Provided that the internal utility function and the external performance  measures  are  in  agreement,  an  agent  that  chooses  actions  to  maximize  its utility will be rational according to the external performance measure.
 
+\vspace{2cm}
+
+\begin{itemize}
+    \item When there are conflicting goals, only some of which can be achieved  (for example, speed and safety), the utility function specifies the appropriate trade-off.
+    \item When there are several goals that the agent can aim for, none of which can be achieved with certainty, utility provides a way in which the likelihood of success can be weighed against the importance of the goals.
+\end{itemize}
+
+An agent that possesses an explicit utility function can make rational decisions  with a general-purpose algorithm that does not depend on the specific utility function being maximized. 
+
 \newpage
 
 \section{Learning agents}
