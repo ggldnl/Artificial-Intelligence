@@ -122,6 +122,7 @@
 		(obs sq23) (obs sq33) (obs sq43) (obs sq53)
 		(obs sq65) (obs sq66)
 		(obs sq08) (obs sq18) (obs sq28) (obs sq38)
+		
 		(at sq31)
 	)
 
