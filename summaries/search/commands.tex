@@ -1,0 +1,81 @@
+\tikzset{%
+   neuron missing/.style={
+    draw=none,
+    scale=2,
+    text height=0.333cm,
+    execute at begin node=\color{black}$\vdots$
+  },
+}
+
+% The command \DrawNeuronalNetwork has a list as argument, each entry is a layer.
+% Each entry has the form:
+% Layer name/number of nodes/color/missing node (dots)/label/symbolic number
+%
+% * "layer name" is the name of the layer
+% * "number of nodes" is the number of neurons in that layer (including the missing neuron)
+% * "color" is the color of the layer
+% * "missing node" denotes the index of the missing neuron, replaced by the dots
+% * "label" denotes the label of the layer
+% * "symbolic number" denotes the symbol that indicates how many neurons there are
+
+\newcommand{\DrawNeuronalNetwork}[2][]{
+\xdef\Xmax{0}
+\foreach \Layer/\X/\Col/\Miss/\Lab/\Count [count=\Y] in {#2}
+{\pgfmathsetmacro{\Xmax}{max(\X,\Xmax)}
+ \xdef\Xmax{\Xmax}
+ \xdef\Ymax{\Y}
+}
+\foreach \Layer/\X/\Col/\Miss/\Lab/\Count [count=\Y] in {#2}
+{\node[anchor=south] at ({2*\Y},{\Xmax/2+0.1}) {\Layer};
+ \foreach \m in {1,...,\X}
+ {
+  \ifnum\m=\Miss
+   \node [neuron missing] (neuron-\Y-\m) at ({2*\Y},{\X/2-\m}) {};
+  \else
+   \node [circle,fill=\Col!50,minimum size=1cm] (neuron-\Y-\m) at
+  ({2*\Y},{\X/2-\m}) {};
+ \ifnum\Y=1
+  \else
+   \pgfmathtruncatemacro{\LastY}{\Y-1}
+   \foreach \Z in {1,...,\LastX}
+   {
+    \ifnum\Z=\LastMiss
+    \else
+     \draw[->] (neuron-\LastY-\Z) -- (neuron-\Y-\m);
+    \fi
+    }
+  \fi
+ \fi
+ \ifnum\Y=1
+  \ifnum\m=\X
+   \draw [<-] (neuron-\Y-\m) -- ++(-1,0) node [above, midway] {$\Lab_{\Count}$};
+  \else
+   \ifnum\m=\Miss
+   \else
+    \draw [<-] (neuron-\Y-\m) -- ++(-1,0) node [above, midway] {$\Lab_{\m}$};
+   \fi
+  \fi
+ \else
+   \ifnum\Y=\Ymax
+    \ifnum\m=\X
+     \draw [->] (neuron-\Y-\m) -- ++(1,0) node [above, midway] {$\Lab_{\Count}$};
+    \else
+     \ifnum\m=\Miss
+     \else
+      \draw [->] (neuron-\Y-\m) -- ++(1,0) node [above, midway] {$\Lab_{\m}$};
+     \fi
+    \fi
+   \else
+     \ifnum\m=1
+      \node[above=0pt of neuron-\Y-\m] {$\Lab_1$};
+     \fi
+     \ifnum\m=\X
+      \node[below=0pt of neuron-\Y-\m] {$\Lab_{\Count}$};
+     \fi
+   \fi
+ \fi
+ }
+ \xdef\LastMiss{\Miss}
+ \xdef\LastX{\X}
+}
+}
