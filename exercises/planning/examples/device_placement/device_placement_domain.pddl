@@ -1,3 +1,14 @@
+; Consider an environment characterized  by a 2x2 grid to be covered by 
+; two kind of devices (A, B). The grid is initially empty and the devices can 
+; be placed in the grid one at a time if the following constraints are 
+; satisfied. Type A devices can be placed in the grid only if the chosen cell 
+; is not occupied by another type A device. If there is already a type B 
+; device the type A device can be placed on top of the type B device. A 
+; type B device can only be placed in a free cell. It is forbidden to have two 
+; devices of the same type on a row and on a column. The goal is to cover 
+; all the cells of the grid with devices.
+
+
 (define (domain device_placement_domain)
 	
 	(:requirements :strips)
