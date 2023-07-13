@@ -41,6 +41,7 @@
     )
 
     (:goal (and
-        (at agent sq03) (has_key agent)
+        ;(at agent sq03) (has_key agent)
+        (has_treasure agent)
     ))
 )

@@ -8,11 +8,12 @@
         (cell ?object)
         (adj ?loc1 ?loc2)
         (has_key ?agent)
-        (door ?loc)    ; does ?loc have a door?
         (pit ?loc)  ; is there a pit?
         (rope ?loc) ; is there a rope?
         (key ?loc)  ; does ?loc have a key?  
-        (at ?agent ?where)
+        (at ?agent ?where) 
+        (door ?loc)
+        (has_treasure ?agent)
     )
 
     (:action move
@@ -39,6 +40,7 @@
             (not (pit ?to))
             (adj ?from ?passing_by)
             (adj ?passing_by ?to)
+            (not (= ?from ?to))
 
             (agent ?agent)
             (cell ?from)
@@ -62,18 +64,18 @@
             (has_key ?agent)
         )
     )
-    ;(:action open_door
-    ;    :parameters (?agent ?loc)
-    ;    :precondition (and 
-    ;        (at ?agent ?loc)
-    ;        (door ?loc)
-    ;        (has_key ?agent)
-    ;
-    ;        (cell ?loc)
-    ;        (agent ?agent)
-    ;    )
-    ;    :effect (and 
-    ;        ()
-    ;    )
-    ;)
+    (:action open_door
+        :parameters (?agent ?loc)
+        :precondition (and 
+            (at ?agent ?loc)
+            (door ?loc)
+            (has_key ?agent)
+    
+            (cell ?loc)
+            (agent ?agent)
+        )
+        :effect (and 
+            (has_treasure ?agent)
+        )
+    )
 )

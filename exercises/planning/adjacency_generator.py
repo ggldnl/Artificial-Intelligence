@@ -13,7 +13,7 @@ if __name__ == '__main__':
 	parser.add_argument('-n', '--name', required=False, type=str, default='sq') # e.g. 'sq', 'c', ...
 
 	# predicate for adjacency e.g. 'adj', 'adjacent', ... 
-	parser.add_argument('-p', '--predicate', required=False, type=str, default='adj')
+	parser.add_argument('-ap', '--adjacency_predicate', required=False, type=str, default='adj')
 
 	# cell predicate e.g. 'cell', 'location', ...
 	parser.add_argument('-cp', '--cell_predicate', required=False, type=str, default='cell')
@@ -24,8 +24,11 @@ if __name__ == '__main__':
 	cols = args.cols
 	diagonal_adj = args.generate_diagonals
 	name = args.name
-	predicate = args.predicate
+	adjacency_predicate = args.adjacency_predicate
 	cell_predicate = args.cell_predicate
+
+	assert rows > 0
+	assert cols > 0
 
 	for i in range(rows):
 		for j in range(cols):
@@ -41,10 +44,10 @@ if __name__ == '__main__':
 					# if valid cell (not outside the boundaries)
 					if l >= 0 and l < rows and m >= 0 and m < cols and not (l == i and m == j):
 						if diagonal_adj:
-							print(f'({predicate} {name}{i}{j} {name}{l}{m})', end=' ')
+							print(f'({adjacency_predicate} {name}{i}{j} {name}{l}{m})', end=' ')
 						# if diagonal_adj is not enabled we need to further exclude some adjacency constraints
 						else:
 							if (abs(i - l) == 1) ^ (abs(j - m) == 1):
-								print(f'({predicate} {name}{i}{j} {name}{l}{m})', end=' ')
+								print(f'({adjacency_predicate} {name}{i}{j} {name}{l}{m})', end=' ')
 							
 			print()
