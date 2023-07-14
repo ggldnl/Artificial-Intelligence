@@ -8,6 +8,12 @@
         (cell ?object)
         (agent ?object)
         (date ?object)
+        (had_dinner ?agent ?date)
+        (free ?cell)
+        (waited ?date)
+        (mall ?loc)
+        (right_place ?date ?loc)
+        (has_time ?agent)
     )
 
     (:action move
@@ -43,16 +49,38 @@
             (not (at ?agent ?from))
             (at ?who ?to)
             (not (at ?who ?from))
+            (free ?from)
         )
     )
-    (:action wait
-        :parameters (?date ?where)
-        :precondition (and 
-            
+    (:action drop_to_shopping
+        :parameters (?agent ?date ?where)
+        :precondition (and
+            (at ?date ?where)
+
+            (cell ?where)
+            (date ?date)
+            (mall ?where)
         )
         :effect (and 
-        
+            ; (waited ?date)
+            (has_time ?agent)
         )
     )
-    
+    (:action dinner
+        :parameters (?agent ?date ?where)
+        :precondition (and 
+            (at ?agent ?where)
+            (at ?date ?where)
+            (right_place ?date ?where)
+            (has_time ?agent)
+
+            (agent ?agent)
+            (date ?date)
+            (cell ?where)
+        )
+        :effect (and 
+            (had_dinner ?agent ?date)
+            (has_time ?agent)
+        )
+    )
 )
