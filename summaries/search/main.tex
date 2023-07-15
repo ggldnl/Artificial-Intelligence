@@ -5,11 +5,17 @@
 \usepackage{tikz}
 \usetikzlibrary{trees}
 
+% comments
+\usepackage{comment}
+
 % arrows
 \usetikzlibrary{arrows.meta}
 
 % colors
 \usepackage{color}
+
+% approx symbol
+\usepackage{amssymb}
 
 %\input{commands}
 \input{colors}
@@ -23,7 +29,7 @@
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 
 \title{Automated Search}
-\author{}
+\author{Daniel Gigliotti}
 \date{}
 
 \begin{document}
@@ -70,7 +76,7 @@ A strategy is defined by picking the order of node expansion.
 \textbf{In what terms one search algorithms is better than another one?} To compare the efficiency of these algorithms we can use the following properties:
 
 \begin{itemize}
-    \item \textbf{completeness}: a search algorithm is said to be complete if for any random input it guarantees to return a solution if at least any solution exists;
+    \item \textbf{completeness}: a search algorithm is said to be complete if for any random input it guarantees to return a solution if at least one solution exists;
     \item \textbf{optimality}: a search algorithm is said to be optimal if it is guaranteed that the solution found is the best one (lowest path cost) among other; 
     \item \textbf{Time complexity}: time complexity measures the time an algorithm takes to complete a task;
     \item \textbf{Space complexity}: space complexity measures the storage space required for an algorithm at any point during the search;
@@ -122,6 +128,8 @@ Algorithms have no additional information on the goal node other than the ones p
         \draw[-{Stealth[black]}] (2,0) -- (5.4,-2);
     \end{tikzpicture}
 \end{center}
+
+\newpage
 
 \subsection{Breadth-first search (BFS)}
 
@@ -181,15 +189,16 @@ This search algorithms is nothing more than an iteration of DLS, increasing the 
             & & & & \\
             \hline
             & & & & \\
-            Breadth-first & yes (if b is finite) & yes (if cost = 1) & $O(b^d)$ & $O(b^d)$ \\
-            & & for each step & & \\
+            Breadth-first & yes (if b is finite) & yes (if cost = 1 & $O(b^d)$ & $O(b^d)$ \\
+            & & for each step) & & \\
             & & & & \\
-            Uniform-cost & yes (if step cost) $\geq\ \epsilon$ & yes & $O(b^{\ceil{1 + C^*/\epsilon}})$ & $O(b^{\ceil{C^*/\epsilon}})$ \\
+            Uniform-cost & yes (if step cost $\geq\ \epsilon$) & yes & $O(b^{\ceil{1 + C^*/\epsilon}})$ & $O(b^{\ceil{C^*/\epsilon}})$ \\
             & & & & \\
-            Depth-first & no (if domain & no & $O(b^m)$ & $O(bm)$ \\
-            & is depth-infinite) & & & \\
+            Depth-first & no (if domain & no (does not find& $O(b^m)$ & $O(bm)$ \\
+            & is depth-infinite) & the lowest path& & \\
+            & & solution) & & \\
             & & & & \\
-            Depth-limited & no & no & $O(b^d)$ & $O(bl)$ \\
+            Depth-limited & no & no & $O(b^l)$ & $O(bl)$ \\
             & & & & \\
             Iterative-deepening & yes & yes & $O(b^d)$ & $O(bd)$
         \end{tabular}
@@ -234,27 +243,89 @@ An alternative approach called bidirectional search simultaneously searches forw
 
 \section{Informed search}
 
-Some algorithms make use of an evaluation function $f(n)$ to decide which node to expand first. Informed search algorithms make use of an \textbf{heuristic function} $h(n)$ which estimates the cost of the cheapest path from the current node to the goal.
+\begin{comment}
+Some algorithms make use of an evaluation function $f(n)$ to decide which node to expand first. Informed search algorithms make use of an \textbf{heuristic function} $h(n)$ which estimates the cost of the cheapest path from the current node to the goal.    
+\end{comment}
 
-\begin{center}
-    \begin{figure}[b!]
-        \centering
-        \begin{tikzpicture}
-            \node[shape=circle] (A) at (0, 0) {Informed search};
-            \node[shape=circle] (B) at (8, 2) {Greedy best-first search (GBFS)};
-            \node[shape=circle] (C) at (8, 1) {Recursive best-first search (RBFS)};
-            \node[shape=circle] (D) at (8, 0) {A*};
-            \node[shape=circle] (E) at (8,-1) {Iterative deepening A* (IDA*)};
-            \node[shape=circle] (F) at (8,-2) {Simplified memory-bounded A* (SMA*)};
+In general, in \textbf{tree-search} and \textbf{graph-search}, a \textbf{strategy} is a set of rules that defines the order in which nodes are selected for expansion and how the search progresses from one node to another. \\
+Uninformed search algorithms use a static set of rules (e.g. expand the current node, then repeat for each of its child, for the Breadth-first search). \\
+
+Some algorithms instead make use of problem-specific knowledge and are thus called \textbf{informed algorithms}. In this case we talk about \textbf{best-first search} instead of three-search/graph-search, and the set of rules that defines the order of expansion is a function of the the node itself, called \textbf{evaluation function}, $f(n)$. Evaluation function is a cost estimate: we expand the lowest cost node
+first. \\
+
+The choice of $f(n)$ determines the search strategy. Often, for best-first search algorithms, $f$ is defined in terms of a \textbf{heuristic function}, $h(n)$, which estimates the cost of the cheapest path from the current node to the goal. Heuristic functions are the most common form in which \textbf{additional knowledge} of the problem is passed to the search algorithm. \\
+
+Best-first search algorithms constitute a large family of algorithms, with different evaluation functions. Some implementations of the Best-first search are \textbf{Greedy Best-first search} and \textbf{A*}.
+
+\subsection{Building an heuristic}
+
+Admissible heuristics can be derived from the exact solution cost of a relaxed version of the problem (relaxed problem: some of the constraints are removed). Problem relaxation is a good way to find a good heuristic. \\
+
+\newpage
+
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \node[shape=circle] (A) at (0, 0) {Informed search};
+        \node[shape=circle] (B) at (8, 2) {Greedy best-first search (GBFS)};
+        \node[shape=circle] (C) at (8, 1) {Recursive best-first search (RBFS)};
+        \node[shape=circle] (D) at (8, 0) {A*};
+        \node[shape=circle] (E) at (8,-1) {Iterative deepening A* (IDA*)};
+        \node[shape=circle] (F) at (8,-2) {Simplified memory-bounded A* (SMA*)};
+    
+        \draw[-{Stealth[black]}] (2,0) -- (5.4,2);
+        \draw[-{Stealth[black]}] (2,0) -- (5.2,1);
+        \draw[-{Stealth[black]}] (2,0) -- (7.7,0);
+        \draw[-{Stealth[black]}] (2,0) -- (5.5,-1);
+        \draw[-{Stealth[black]}] (2,0) -- (4.8,-2);
+    \end{tikzpicture}
+\end{figure}
+
+\newpage
+
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \node[align=left, shape=circle] (A) at (0, 10) {
+            GBFS \\ 
+            not complete, not optimal \\
+            time complexity $O(b^m)$ \\
+            spatial complexity $O(b^m)$
+        };
+        \node[align=left, shape=circle] (B) at (0, 5) {
+            A* \\
+            complete, optimal \\
+            time complexity $O(b^m)$ \\
+            spatial complexity $O(b^m)$
+        };
+        \node[align=left, shape=circle] (C) at (0, 0) {
+            IDA* \\
+            complete, optimal \\
+            time complexity $O(b^m)$ \\
+            spatial complexity $O(bm)$
+        };
+        \node[align=left, shape=circle] (D) at (5, 0) {
+            VS
+        };
+        \node[align=left, shape=circle] (D) at (10, 0) {
+            RBFS (can backtrack) \\
+            complete, not optimal \\
+            time complexity $?$ \\
+            spatial complexity $O(b^m)$
+        };
+        \node[align=left, shape=circle] (E) at (5, -5) {
+             SMA*
+        };
+    
+        \draw[-{Stealth[black]}] (0, 9) -- (0,6);
+        \draw[-{Stealth[black]}] (0, 4) -- (0,1);
         
-            \draw[-{Stealth[black]}] (2,0) -- (5.4,2);
-            \draw[-{Stealth[black]}] (2,0) -- (5.2,1);
-            \draw[-{Stealth[black]}] (2,0) -- (7.7,0);
-            \draw[-{Stealth[black]}] (2,0) -- (5.5,-1);
-            \draw[-{Stealth[black]}] (2,0) -- (4.8,-2);
-        \end{tikzpicture}
-    \end{figure}
-\end{center}
+        \draw[-{Stealth[black]}] (C) -- (E);
+        \draw[-{Stealth[black]}] (D) -- (E);
+        
+    
+    \end{tikzpicture}
+\end{figure}
 
 \newpage
 
@@ -265,6 +336,7 @@ Some algorithms make use of an evaluation function $f(n)$ to decide which node t
     \begin{equation}
         \forall n : h_1(n) \geq h_2(n)
     \end{equation}
+    The dominant heuristic is better for search.
 
     \item \textbf{Admissibility}: a heuristic function is admissible if it never overestimates the cost to reach the goal;
 
@@ -290,6 +362,15 @@ Some algorithms make use of an evaluation function $f(n)$ to decide which node t
 \end{center}    
 \end{itemize}
 
+\begin{flushleft}
+    If a heuristic is not consistent, we can use the \textbf{pathmax}:
+\end{flushleft}
+\begin{equation}
+    f(n') = max(g(n') + h(n')), f(n))
+\end{equation}
+Using pathmax, $f$ is always \textbf{non decreasing}.
+
+
 \subsection{Combination of heuristics}
 
 What if we have several heuristics not dominating each other? \\
@@ -302,15 +383,46 @@ Let $h_1, ..., h_m$ be a collection of such heuristics, define:
 
 $h$ is admissible and dominates $h_1, ..., h_m$.
 
-\subsection{Building an heuristic}
+\newpage
 
-Admissible heuristics can be derived from the exact solution cost of a relaxed version of the problem (relaxed problem: some of the constraints are removed). Problem relaxation is a good way to find a good heuristic. \\
+\subsection{Effective Branching Factor}
+
+The effective branching factor (EBF) is a measure that quantifies the average branching factor of a search tree by taking into account the depth or level of the tree. It is used to estimate the size or complexity of a search problem based on the number of nodes at a certain depth. \\
+
+\begin{center}
+    \textbf{To measure the effectiveness of a heuristic of a heuristic we estimate the effective branching factor}.
+\end{center}
+
+\begin{equation}
+    N + 1 = 1 + EBF + EBF^2 + ... + EBF^d    
+\end{equation}
+\begin{flushleft}
+$N$ = total number of nodes expanded by the algorithm \\
+$d$ = depth of the solution \\
+$b^*$ = branching factor of a uniform tree of depth $d$ with $N + 1$ nodes
+\end{flushleft}
+
+The closer the EBF is to one, the better the heuristic is. \\
+
+Example:
+We have two heuristics, $h_1(n)$ and $h_2(n)$. A search algorithm expands $N_1 = 17$ nodes with the first heuristic, $N_2 = 14$ nodes with the second. The expansion tree has $d = 3$ branching factor.
+
+\begin{equation}
+    17 + 1 = 1 + EBF_1 + EBF_1^2 + EBF_1^3 \rightarrow \approx 2.165
+\end{equation}
+\begin{equation}
+    14 + 1 = 1 + EBF_2 + EBF_2^2 + EBF_2^3 \rightarrow = 2
+\end{equation}
+
+\begin{flushleft}
+    Thus, the second heuristics is better.
+\end{flushleft}
 
 \newpage
 
 \subsection{Greedy best-first search (GBFS)}
 
-Greedy BFS uses the following evaluation function $f(n) = h(n)$, which is just the heuristic function $h(n)$, that estimates the closeness of $n$ to the goal. Hence, greedy BFS tries to expand the node that is thought to be closest to the goal, without taking into account previously gathered knowledge (i.e. $g(n)$). \\
+Greedy BFS uses the following evaluation function $f(n) = h(n)$, which is just the heuristic function $h(n)$, that estimates the closeness of $n$ to the goal. Hence, GBFS tries to expand the node that is thought to be closest to the goal, without taking into account previously gathered knowledge (i.e. $g(n)$). The algorithm does not account for the possibility that a node with a lower heuristic value may have a higher path cost, potentially leading to suboptimal solutions.\\
 
 It has time complexity $O(b^m)$ where $b$ is the branching factor (the average number of children per node) and $m$ is the maximum depth of the search space, and space complexity $O(b^m)$ (it keeps all the nodes in memory). Can get stuck in loops and it is therefore not complete. Not accounting for $g(n)$ it may not always find the shortest path. \\
 
@@ -337,11 +449,9 @@ $A^*$ is guaranteed to find the shortest path if heuristic function is admissibl
 $A^*$ is complete, unless there are infinitely many nodes with $f < f(G)$ (estimated cost of the goal).
 It is also optimal. The problem is that the spacial complexity is exponential $O(b^m)$ as in GBFS. \\
 
-
-
-
 \begin{flushleft}
-    Cons: the memory necessary to store the frontier may be exponential.
+    \textbf{Pros}: it is complete (in some cases) and optimal. \\
+    \textbf{Cons}: the memory necessary to store the frontier may be exponential.
 \end{flushleft}
 
 \newpage
@@ -420,7 +530,13 @@ To avoid getting stuck in local maxima, variations of the algorithm such as simu
 
 \subsection{Simulated annealing (SA)}
 
-Simulated Annealing is a probabilistic algorithm for global optimization that is often used to find an approximate solution to difficult optimization problems. The algorithm models the process of heating a material and then slowly cooling it down to find a state close to the global minimum energy state.
+Simulated Annealing is a probabilistic algorithm for global optimization that is often used to find an approximate solution to difficult optimization problems. The algorithm models the process of heating a material and then slowly cooling it down to find a state close to the global minimum energy state.\\
+
+The algorithm starts with an initial solution and iteratively explores the search space, gradually refining the solution. At each iteration, it considers neighboring solutions and decides whether to accept or reject them based on a probabilistic criterion. Simulated Annealing allows for occasional moves that worsen the objective function in order to escape local optima and explore other regions of the search space.\\
+
+The key idea behind Simulated Annealing is to balance exploration and exploitation. Initially, the algorithm allows for more exploration, accepting moves that increase the objective function value even if they are worse. However, as the search progresses, the algorithm reduces the probability of accepting worse moves. \\
+
+The acceptance probability of a worse move is determined by the current temperature parameter and the difference in objective function values between the current and candidate solutions. The temperature parameter controls the level of randomness in accepting worse solutions. As the temperature decreases over iterations, the probability of accepting worse moves diminishes, leading the algorithm towards exploitation and convergence to a local optimum.
 
 The basic process of the algorithm is as follows:
 
@@ -428,13 +544,13 @@ The basic process of the algorithm is as follows:
     \item Start with an initial solution (e.g., a randomly generated state);
     \item Generate a new solution by making small random changes to the current solution;
     \item Calculate the energy difference between the new solution and the current solution;
-    \item Decide whether to accept the new solution as the current solution, based on a probability that depends on the energy difference and a temperature parameter.
-    \item Repeat steps 2-4 until the temperature parameter has cooled to a low value or a stopping criterion is met.
+    \item Decide whether to accept the new solution as the current solution, based on a probability that depends on the energy difference.
+    \item Repeat steps 2-4 until a stopping criterion is met.
 \end{enumerate}
 
-The time complexity of the SA algorithm is generally considered to be $O(kT^n)$, where $k$ is the number of iterations at a given temperature, $T$ is the number of temperature values, and $n$ is the number of variables in the problem. The space complexity is $O(n)$.
+The time complexity of the SA algorithm is generally considered to be $O(kT^n)$, where $k$ is the number of iterations at a given temperature, $T$ is temperature parameter, and $n$ is the number of variables in the problem. The space complexity is $O(n)$. \\
 
-\newpage
+Simulated Annealing can be a powerful optimization technique, especially in large and complex search spaces where finding the global optimum is challenging. However, it does not guarantee finding the global optimum, as it can still get stuck in local optima. Various techniques can be employed to enhance its performance, such as adjusting the temperature parameter, neighborhood exploration strategies, or employing multiple runs with different starting points (random restarts).
 
 \subsection{Random restart vs Simulated annealing}
 
@@ -444,7 +560,11 @@ Random restart is a technique where the algorithm starts from a randomly generat
 
 Simulated Annealing starts from an initial solution and then generates a new solution that is randomly different from the current one. The algorithm will accept the new solution if it is better than the current one, otherwise, it will accept it with a probability that decreases as the number of iterations increases. The idea behind this is that the algorithm will not get stuck in a local optimum but it will be able to explore a wider range of solutions by allowing some bad moves.
 
-In summary, random restart is a technique where the algorithm starts from different initial solutions, Simulated Annealing is a technique that allows bad moves early in the optimization process, but reduces the likelihood of bad moves as the optimization process progresses.
+In summary:
+\begin{itemize}
+    \item random restart is a technique that makes the algorithm starts from different initial states in order to overcome local minima/maxima;
+    \item simulated annealing is an algorithm that randomly generates new states from the current one, accept them as new states if they are better than the current or if they are worse than the current but this is the choice to make by generating a random value. Going on the algorithm reduces the likelihood of accepting worse states.
+\end{itemize}
 
 \newpage
 
@@ -453,16 +573,27 @@ In summary, random restart is a technique where the algorithm starts from differ
 Each iteration, LBS generates a set of new states from the current beam, and then selects the best $k$ states from the combination of the current beam and the new states to form the next beam. The process repeats until a goal state is found or a certain stopping criterion is met. \\
 
 \begin{center}
-The problem is that the states converge in the same region of the search space. \\     
+\textbf{The problem is that the states converge in the same region of the search space.} \\     
 \end{center}
 
-LBS can easily get stuck in local optima. Because LBS only generates new states from the states in the current beam, it has a limited view of the search space and may miss global optima that are outside of its current beam. This can lead to the algorithm converging on a suboptimal solution, rather than the true optimal solution.
+LBS can easily get stuck in local optima. Because LBS only generates new states from the states in the current beam, it has a limited view of the search space and may miss global optima that are outside of its current beam. This can lead to the algorithm converging on a suboptimal solution, rather than the true optimal solution. \\
+
+The steps are:
+
+\begin{itemize}
+    \item From a \textbf{single} start state, maintain K states and not just a single one (like in other search algorithms);
+    \item At each iteration, the best K successor states for each state are identified;
+    \item If the goal is found, then halt, else iterate the procedure.
+\end{itemize}
+
+\newpage
 
 \subsection{Genetic algorithms}
 
-Genetic algorithms work by simulating the logic of Darwinian selection. 
-
-Genetic algorithms starts by generating an initial population (random strings). 
+\begin{flushleft}
+Genetic algorithms work by simulating the logic of Darwinian selection.
+Genetic algorithms starts by generating an initial population (random strings).     
+\end{flushleft}
 
 \begin{enumerate}
     \item This \textbf{initial population} consists of all the probable solutions to the given problem.
@@ -482,5 +613,75 @@ Genetic algorithms starts by generating an initial population (random strings).
 
     \item If a \textbf{stopping criterion} is met, we could terminate (threshold in fitness).
 \end{enumerate}
+
+\newpage
+
+\section{Minimax}
+
+Mini-max algorithm is a recursive or backtracking algorithm which is used in decision-making and game theory. It provides an optimal move for the player assuming that opponent is also playing optimally. \\
+
+Min-Max algorithm is mostly used for game playing in AI. Such as Chess, Checkers, tic-tac-toe, go, and various tow-players game. Both the players fight it as the opponent player gets the minimum benefit while they get the maximum benefit. \\
+
+Mnimax works with a game tree. We have two agents, one called \textbf{MAX} and one called \textbf{MIN}. MAX tries to maximize the reward of the game (utility), while MIN tries to minimize that reward.
+
+\begin{center}
+    \begin{tikzpicture}
+        \node[shape=circle, draw=black, fill=light_green, minimum size=1.2cm] (A) at (0,0) {MAX};
+                        
+        \node[shape=circle, draw=black, fill=light_yellow, minimum size=1.2cm] (B) at (-4,-2) {MIN};
+        \node[shape=circle, draw=black, fill=light_yellow, minimum size=1.2cm] (C) at (4,-2) {MIN} ;
+        
+        \node[shape=circle, draw=black, fill=light_green, minimum size=1.2cm] (D) at (6,-4) {MAX};
+        \node[shape=circle, draw=black, fill=light_green, minimum size=1.2cm] (E) at (2,-4) {MAX};
+        \node[shape=circle, draw=black, fill=light_green, minimum size=1.2cm] (F) at (-2,-4) {MAX};
+        \node[shape=circle, draw=black, fill=light_green, minimum size=1.2cm] (G) at (-6,-4) {MAX};
+        
+        \node[shape=circle, draw=black, fill=light_blue, minimum size=1.2cm] (H) at (-7,-6) {4};
+        \node[shape=circle, draw=black, fill=light_blue, minimum size=1.2cm] (I) at (-5,-6) {8};
+        \node[shape=circle, draw=black, fill=light_blue, minimum size=1.2cm] (J) at (-3,-6) {9};
+        \node[shape=circle, draw=black, fill=light_blue, minimum size=1.2cm] (K) at (-1,-6) {3};
+        \node[shape=circle, draw=black, fill=light_blue, minimum size=1.2cm] (L) at (1,-6) {2};
+        \node[shape=circle, draw=black, fill=light_blue, minimum size=1.2cm] (M) at (3,-6) {-2};
+        \node[shape=circle, draw=black, fill=light_blue, minimum size=1.2cm] (N) at (5,-6) {9};
+        \node[shape=circle, draw=black, fill=light_blue, minimum size=1.2cm] (O) at (7,-6) {-1};
+        
+    \begin{scope}[every edge/.style={draw=black}]
+        \draw [-stealth](A) edge node[left] {v=8} (B);
+        \draw [-stealth](A) edge node[left] {v=2} (C);
+        
+        \draw [-stealth](B) edge node[left] {v=9} (F);
+        \draw [-stealth](B) edge node[left] {v=8} (G);
+        \draw [-stealth](C) edge node[left] {v=9} (D);
+        \draw [-stealth](C) edge node[left] {v=2} (E);
+        
+        \draw [-stealth](G) edge node[left] {4} (H);
+        \draw [-stealth](G) edge node[left] {8} (I);
+        \draw [-stealth](F) edge node[left] {9} (J);
+        \draw [-stealth](F) edge node[left] {3} (K);
+        \draw [-stealth](E) edge node[left] {2} (L);
+        \draw [-stealth](E) edge node[left] {-2} (M);
+        \draw [-stealth](D) edge node[left] {9} (N);
+        \draw [-stealth](D) edge node[left] {-1} (O);
+
+    \end{scope}
+        
+    \end{tikzpicture}
+\end{center}
+
+\newpage
+
+Explanation on how the Minimax algorithm works
+
+\newpage 
+
+\section{Monte Carlo Tree Search (MCTS)}
+
+Explanation on how the Monte Carlo Tree Search algorithm works
+
+\newpage 
+
+\section{Expectiminimax}
+
+Explanation on how the Expectiminimax algorithm works
 
 \end{document}
