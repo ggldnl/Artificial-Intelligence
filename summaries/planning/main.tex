@@ -7,6 +7,9 @@
 % arrows with text
 \usepackage{mathtools}
 
+% block comments
+\usepackage{comment}
+
 % nested bullet itemize
 \usepackage{enumitem}
 
@@ -45,7 +48,7 @@ A \textbf{planning problem} is one in which we have some initial \textbf{startin
 
 \newpage
 
-THIS NEEDS TO BE CHANGEEEEEEEDDDD \\
+\begin{comment}
 
 A \textbf{fluent} is a variable or predicate that represents a condition or state of the world in a problem domain. For example, in a robotic vacuum cleaner domain, one possible fluent could be the "location" of the vacuum cleaner and it could have different values such as "kitchen", "living room", "bedroom", etc. depending on where the vacuum cleaner is currently located. Fluents are used in planning to define the preconditions and effects of action schemas. \\
 
@@ -58,6 +61,28 @@ A set of instantiated fluents is called a \textbf{state}. According to the \text
 \begin{center}
     \textbf{A state (factor representation) is a set of fluents.}
 \end{center}
+
+\end{comment}
+
+\begin{itemize}
+    \item \textbf{Predicates} are used to represent relationships between objects or entities. A predicate is a statement that takes one or more arguments and returns a thruth value. 
+
+    \begin{center}
+        isParentOf(x, y) \\
+    
+        takes two arguments and returns true if x is parent of y
+    \end{center}
+    \item \textbf{Fluents} are expressions of the form:
+
+    \begin{center}
+        $P(x_1, x_2, ..., x_n)$ or $\neg P(x_1, x_2, ..., x_n)$
+    \end{center}
+    
+    where $P$ is a predicate, $0 \leq n$ and $x_i$ are either variables or constant symbols. Basically, a fluent is a predicate or the negation of a predicate.
+    \item \textbf{States} are sets of instantiated fluents. Each fluent in the state represents if the corresponding property is satisfied (true) or not (false).
+\end{itemize}
+
+\textbf{Database assumption} (also known as \textbf{Close World assumption}): a state only contains positive fluents. All the missing ones are assumed to be false.
 
 \newpage
 
@@ -117,11 +142,28 @@ An action $a$ with $Preconditions(a) = q$ is \textbf{applicable} in a state $s$ 
 
 \newpage
 
+\section{Unification}
+
+\textbf{Unification} of two expressions is the process of finding a substitution that, whan applied to them, makes them identical.\\
+
+Example: ${x/b}$ is a unifier for $p(a, x)$ and $p(a, b)$ \\
+
+Unification is applied to expressions of the form $P(t_1, t_2, ..., t_n)$. \\
+$unify(P(t_1, t_2, ..., t_n), P(s_1, s_2, ..., s_n))$: find a substitution that makes $P(t_1, t_2, ..., t_n)$ and $P(s_1, s_2, ..., s_n)$ identical.
+
+\begin{itemize}
+    \item $unify(P(X), P(a)) = {X/a}$
+    \item $unify(P(a), Q(a)) = ?$ (not admissible)
+    \item $unify(P(X,X), P(a, b)) = ?$ (not admissible)
+\end{itemize}
+
+\newpage
+
 \subsection{Progression}
 
 Apply actions whose preconditions are satisfied until goal is found or all states have been explored. \\
 
-We have to specify what is going to be the state after the execution of the action. The effects of the action can be positive fluents or negative fluents. 
+We have to specify what is going to be the state after the execution of the action. The \textbf{effects of the action} can be positive fluents or negative fluents. 
 
 \begin{itemize}
     \item positive fluents have to be true in the resulting state $\rightarrow$ ADD(a);
@@ -160,6 +202,28 @@ Admissible heuristics can be derived from the relaxed problem which is easier to
     \item \textbf{Removing negated effects}; 
     \item \textbf{Decomposition}: decompose the problem into smaller, individual problems; each one will have a cost; which cost should we use for the heuristic? Should we take the max of the costs or the sum? Better do the max because maybe solving one subgoal can help solving others: summing will return a higher cost in this case, hence the heuristic is not admissible (heuristic is admissible if it does not overestimate the cost).
 \end{itemize}
+
+\newpage
+
+\section{GraphPlan}
+
+\textbf{Graphplan} is an efficient planning algorithm in which the data structure representing the plan is a graph. \\ 
+
+The primary goal of Graphplan is to efficiently compute a plan for a given planning problem by representing it as a planning graph. A planning graph is a directed acyclic graph that consists of levels and layers. We have \textbf{state levels} and \textbf{action levels}. 
+
+\begin{itemize}
+    \item \textbf{State levels} contains all the literals that could be true afer the steps applied to reach that level, thus representing the state of the world;
+    \item \textbf{Action levels} represent actions whose preconditions are satisfied by each state level.
+\end{itemize}
+
+State levels and action levels alternate themselves. \\
+
+The algorithm works by incrementally expanding the planning graph, starting from an initial state and working towards a goal state. It performs two main steps in each iteration: 
+
+\begin{itemize}
+    \item the \textbf{forward search} expands the planning graph by adding new layers and propositions;
+    \item the \textbf{backward search} checks for conflicts and determines if the goal state is reachable.
+\newpage
 
 \section{Total-Order Planning (TOP)}
 
