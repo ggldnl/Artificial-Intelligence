@@ -46,7 +46,7 @@ Given that:
 
 \begin{center}
     \begin{itemize}
-        \item \textbf{Search space} is the set of possible solutions which a system may have;
+        \item \textbf{State space} is the set of possible solutions which a system may have;
         \item \textbf{Start state} is the state in which the agent is initially;
         \item \textbf{Goal state} is the state the agent needs to reach.
     \end{itemize}
@@ -153,14 +153,16 @@ Uniform-cost search uses the lowest cumulative cost to find a path from the sour
     \textit{frontier = priority queue}
 \end{center}
 
-It is complete (if each step cost $\geq \epsilon$ and optimal. t can be inefficient in situations where the cost of reaching a goal state is large, but there are also many lower-cost paths that lead to states that are not the goal state. In such cases, the algorithm may explore a large number of unnecessary states before finding the goal state, leading to a high time complexity. Additionally, if the cost function is not consistent, the algorithm may get stuck in an infinite loop.
+It is complete (if each step cost $\geq \epsilon$ i.e. there are no negative costs) and optimal. It can be inefficient in situations where the cost of reaching a goal state is large, but there are also many lower-cost paths that lead to states that are not the goal state. In such cases, the algorithm may explore a large number of unnecessary states before finding the goal state, leading to a high time complexity. Additionally, if the cost function is not consistent, the algorithm may get stuck in an infinite loop. \\
+
+When encountered a second time with a different cost, a node is also kept. We keep all the nodes we encounter if they are not in the visited list. 
 
 \newpage
 
 \subsection{Depth-first search (DFS)}
 
-Depth-first search is a method for traversing a graph or tree data structure. The root node is visited first, the next one is chosen by going deeper into the tree/graph. This process continues until a leaf node (a node with no children) is reached, then the process backtracks to the most recent node that has unvisited children. DFS is implemented using a \textbf{stack} data structure to keep track of the nodes to be visited next (\textbf{LIFO} structure). DFS is used for tasks such as topological sorting, solving mazes and puzzles, and searching for connected components in a graph.
-
+Depth-first search is a method for traversing a graph or tree data structure. The root node is visited first, the next one is chosen among its children by going deeper into the tree/graph. This process continues until a leaf node (a node with no children) is reached, then the process backtracks to the most recent node that has unvisited children. DFS is implemented using a \textbf{stack} data structure to keep track of the nodes to be visited next (\textbf{LIFO} structure). DFS is used for tasks such as topological sorting, solving mazes and puzzles, and searching for connected components in a graph. It is very efficient in all the applications in which we need to explore the space going as deep as we can.
+121
 \begin{center}
     \textit{frontier = stack}
 \end{center}
@@ -173,11 +175,11 @@ It is NOT complete since it fails in infinite-depth spaces or spaces with loops.
 
 This search is like the Depth-first search but there is a limit in the tree's depth. In this way, the search process cannot continue infinitely. If there is not a solution in the subtree considered, the algorithm will not be able to find any solution, and is therefore NOT complete. It is not optimal for the same reason. It finds a solution in $O(b^d)$ if present and occupies $O(b*l)$ memory ($l$ being the depth limit).
 
-\newpage
-
 \subsection{Iterative-deepening search (IDS)}
 
-This search algorithms is nothing more than an iteration of DLS, increasing the limit at each step. It starts from $l=1$ and increases it until the shallowest solution is found. It IS complete because it finds a solution acting in a similar way of BFS, but requiring significantly less memory. The complexity is $O(b^d)$ for time and $O(b^d)$ for memory occupation. 
+This search algorithms is nothing more than an iteration of DLS, increasing the limit at each step. It starts from $l=1$ and increases it until the shallowest solution is found. It IS complete because it finds a solution acting in a similar way of BFS, but requiring significantly less memory. The complexity is $O(b^d)$ for time and $O(bd)$ for memory occupation. 
+
+\newpage
 
 \subsection{Uniformed search comparison}
 
