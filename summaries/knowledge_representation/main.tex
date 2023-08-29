@@ -1,0 +1,185 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+
+\usepackage{amsmath}
+
+\title{Knowledge Representation}
+\author{Daniel Gigliotti}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Knowledge base and inference engine}
+
+A \textbf{knowledge base} (KB) is a repository of information and facts. The knowledge in a knowledge base is typically represented using some formal language or notation (Propositional Logic, First Order Logic, ...) that allows a system to understand and manipulate the information. Once the system has a knowledge base it can use an \textbf{inference engine} to derive new information and make decisions. The inference engine uses various inference rules and logical operations to process the input data and generate new insights. These two components allow us to \textbf{tell} the system what it needs to know: it is a \textbf{declarative} approach to building an agent. \\
+
+\section{Logics}
+
+\textbf{Logics} are formal languages for \textbf{representing information} such that \textbf{conclusions can be drawn}.
+\textbf{Syntax} defines the legal sentences in the language, \textbf{semantics} define the meaning of the sentences, their \textbf{truth in a particular world}. \\
+
+Example: the language of arithmetic.
+\begin{center}
+    $x + 2 >= y$ is a sentence.\\
+    $x2 + y >= $ is not  a sentence. \\
+    $x + 2 >= y$ is true in a world where $x = 7, y = 1$. \\
+    $x + 2 >= y$ is false in a world where $x = 0, y = 6$. \\
+\end{center}
+
+We can extract information from the knowledge base with entailment. \textbf{Entailment} means that one sentence follows from another:
+\begin{equation*}
+    KB \models \alpha
+\end{equation*}
+\begin{center}
+    $\alpha$ is true in all worlds where $KB$ is true.    
+\end{center}\newpage
+
+In summary:
+\begin{itemize}
+    \item We have a \textbf{knowledge base} that is a set of sentences expressed in a particular language, subjected to syntactic rules.
+    \item Each sentence is formed by logical variables, constants, and operators.
+    \item We can assign truth values to the variables and define how the logical operators and relations function. This is called \textbf{interpretation}. Possible worlds correspond to different interpretations.
+    \item We say $m$ is a \textbf{model} of a sentence $\alpha$ if $m$ is an interpretation and $\alpha$ is true in $m$.
+    \item $M(\alpha)$ is the set of all models of $\alpha$.
+    \item The following is true:
+    \begin{equation*}
+        KB \models \alpha \iff M(KB) \subseteq M(\alpha)
+    \end{equation*}
+    \item Two sentences are \textbf{logically equivalent} iff true in the same models:
+    \begin{equation*}
+        \alpha \leq \beta \iff \alpha \models \beta \land \beta \models \alpha
+    \end{equation*}
+\end{itemize}
+
+\newpage
+
+\section{Model Checking}
+
+The knowledge that is entailed by a $KB$ can be computed by:
+\begin{equation*}
+    KB \models \alpha
+\end{equation*}
+and can be derived by building models and checking whether $M(KB) \subseteq M(\alpha)$.
+This approach is referred to as \textbf{model checking} and it is sort of a proof by exhaustion (enumeration), therefore not always applicable.
+
+\section{Deduction}
+
+Another way of computing the knowledge entailed by a $KB$ is by a deduction procedure (proof):
+
+\begin{equation*}
+    KB \vdash_i \alpha
+\end{equation*}
+
+denotes that $\alpha$ can be derived from $KB$ by procedure $i$. Deduction works on formulae by applying \textbf{inference rules}. \\
+
+We use two properties to describe deduction procedures:
+
+\begin{itemize}
+    \item \textbf{Soundness}: $i$ is sound if whenever $KB \vdash_i \alpha$, it is also true that $KB \models \alpha$.
+    \item \textbf{Completeness}: $i$ is complete if whenever $KB \models \alpha$, it is also true that $KB \vdash_i \alpha$.
+\end{itemize}
+
+\newpage
+
+\section{Propositional Logic}
+
+Propositional logic is a branch of formal logic that deals with propositions and their relationships using a symbolic notation. Propositions are statements that are either true or false, and propositional logic focuses on studying how these propositions can be combined and manipulated to form more complex statements. \\
+
+In propositional logic, propositions are represented using variables, such as p, q, or r, and logical operators, such as and ($\land$), or ($\lor$), not ($\neg$), implies ($\implies$), and iff ($\iff$). These operators allow us to construct compound propositions by combining simpler propositions.
+
+\begin{itemize}
+    \item $True (\top)$ and $False (\bot)$ are propositional symbols;
+    \item If $S$ is a propositional symbol, $S$ is a sentence;
+    \item If $S$ is a sentence, $\neg S$ is a sentence (negation);
+    \item If $S_1$ and $S_2$ are sentences, $S_1 \land S_2$ is a sentence (conjunction);
+    \item If $S_1$ and $S_2$ are sentences, $S_1 \lor S_2$ is a sentence (disjunction);
+    \item If $S_1$ and $S_2$ are sentences, $S_1 \implies S_2$ is a sentence (implication);
+    \item If $S_1$ and $S_2$ are sentences, $S_1 \iff S_2$ is a sentence (biconditional);
+\end{itemize}
+
+\newpage
+
+\section*{Truth tables for connectives}
+
+\begin{center}
+    \begin{table}[h]
+        \begin{tabular}{|l|l||l|l|l|l|l|}
+        \hline
+        $P$   & $Q$   & $\neg P$ & $P \land Q$ & $P \lor Q$ & $P \implies Q$ & $P \iff Q$ \\
+        \hline
+        \hline
+        false & false & true    & false      & false      & true           & true       \\
+        \hline
+        false & true  & true    & false      & true       & true           & false      \\
+        \hline
+        true  & false & false   & false      & true       & false          & false      \\
+        \hline
+        true  & true  & false   & true       & true       & true           & true       \\
+        \hline
+        \end{tabular}
+    \end{table}
+\end{center}
+
+\section*{Logical equivalence table}
+
+\begin{center}
+    \begin{tabular}{ll}
+        $(\alpha \land \beta) \equiv (\beta \land \alpha)$ & Commutativity of $\land$ \\
+        $(\alpha \lor \beta) \equiv (\beta \lor \alpha)$ & Commutativity of $\lor$ \\
+        $((\alpha \land \beta) \land \gamma) \equiv (\alpha \land (\beta \land \gamma))$ & Associativity of $\land$ \\
+        $((\alpha \lor \beta) \lor \gamma) \equiv (\alpha \lor (\beta \lor \gamma))$ & Associativity of $\lor$ \\
+        $\neg (\neg \alpha) \equiv \alpha$ & Double-Negation Elimination \\
+        $\alpha \Rightarrow \beta \equiv \neg \alpha \lor \beta$ & Implication \\
+        $\alpha \Leftrightarrow \beta \equiv (\alpha \Rightarrow \beta) \land (\beta \Rightarrow \alpha)$ & Biconditional Elimination \\
+        $\neg (\alpha \land \beta) \equiv (\neg \alpha) \lor (\neg \beta)$ & De Morgan on $\land$ \\
+        $\neg (\alpha \lor \beta) \equiv (\neg \alpha) \land (\neg \beta)$ & De Morgan on $\lor$ \\
+        $(\alpha \land (\beta \lor \gamma)) \equiv ((\alpha \land \beta) \lor (\alpha \land \gamma))$ & Distributivity of $\land$ over $\lor$ \\
+        $(\alpha \lor (\beta \land \gamma)) \equiv ((\alpha \lor \beta) \land (\alpha \lor \gamma))$ & Distributivity of $\lor$ over $\land$ \\
+    \end{tabular}
+\end{center}
+
+\hspace{1cm}
+
+\section*{Validity and satisfiability}
+
+\begin{itemize}
+    \item A sentence is \textbf{valid} if it is \textbf{true in all interpretations} (it has infinite models).
+    \begin{equation*}
+        A \lor \neg A, A \implies A, \top, ...
+    \end{equation*}
+    \item A sentence is \textbf{satisfiable} if it is \textbf{true in some interpretations} (it has at least a model).
+    \begin{equation*}
+        A \lor B
+    \end{equation*}
+    \item A sentence is \textbf{unsatisfiable} (inconsistent) if it is \textbf{never true} (it has no model).
+    \begin{equation*}
+        A \land \neg A        
+    \end{equation*}
+    \item $\alpha$ is valid if $\neg \alpha$ is unsatisfiable.
+    \item $\alpha$ is satisfiable if $\neg \alpha$ is not valid.
+\end{itemize}
+
+\newpage
+
+\section*{Inference with validity and satisfiability}
+
+\begin{itemize}
+    \item \textbf{Deduction theorem} (connection between inference and validity)
+    \begin{equation*}
+        KB \models \alpha \iff (KB \implies \alpha)\ is\ valid
+    \end{equation*}
+    \item \textbf{Reductio ad absurdum} (connection between inference and satisfiability)
+    \begin{equation*}
+        KB \models \alpha \iff (KB \land \neg \alpha)\ is\ unsatisfiable
+    \end{equation*}
+\end{itemize}
+
+\newpage
+
+\section{Conjunctive Normal Form (CNF)}
+
+
+
+\end{document}
