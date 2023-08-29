@@ -18,30 +18,30 @@ Games have played a pivotal role in the development of artificial intelligence b
 
 \section{Minmax}
 
-The most common search technique in game playing is the Minimax algorithm. 
-It is a depth-first, depth-limited, general-purpose search procedure, but it can be used in games to determine the optimal decision to make in an adversarial setting. An adversarial game is a game in which you and your opponent have opposite goals: your goal is for you to win and for your opponent to lose, your opponent's goal is for them to win and for you to loose. Using the minimax algorithm we suppose both players are playing optimally: playing optimally is about ensuring the best outcome for yourself even in the worst case scenario. \\
+The most common search technique in game playing is the minmax algorithm. 
+It is a depth-first, depth-limited, general-purpose search procedure, but it can be used in games to determine the optimal decision to make in an adversarial setting. An adversarial game is a game in which you and your opponent have opposite goals: your goal is for you to win and for your opponent to lose, your opponent's goal is for them to win and for you to loose. Using the minmax algorithm we suppose both players are playing optimally: playing optimally is about ensuring the best outcome for yourself even in the worst case scenario. \\
 
-The central idea behind the Minimax algorithm is to create a game tree that represents all possible moves and counter-moves, up to a certain depth, from the current game state. Each node in the tree represents a game state, and the edges represent possible moves that lead to subsequent game states. The leaves of the tree are evaluated using a heuristic function that estimates the desirability of the final outcomes from that state.
+The central idea behind the minmax algorithm is to create a game tree that represents all possible moves and counter-moves, up to a certain depth, from the current game state. Each node in the tree represents a game state, and the edges represent possible moves that lead to subsequent game states. The leaves of the tree are evaluated using a heuristic function that estimates the desirability of the final outcomes from that state.
 
 \newpage
 
-Here's how the Minimax algorithm works:
+Here's how the minmax algorithm works:
 
 \begin{enumerate}
     \item \textbf{Build the Game Tree}: Starting from the current game state, generate all possible moves and create a new node for each resulting game state. This process continues for a certain depth or until a terminal state (win, lose, or draw) is reached.
     \item \textbf{Evaluate Terminal Nodes}: If a terminal state is reached, assign a value to that node based on the outcome of the game (e.g., +1 for a win, -1 for a loss, 0 for a draw).
-    \item \textbf{Propagate Values Upwards}: Backpropagate the values from the terminal nodes to their parent nodes. For nodes representing the current player's turn, choose the maximum value of its child nodes. For nodes representing the opponent's turn, choose the minimum value of its child nodes. This alternation of maximizing and minimizing gives the algorithm its name, Minimax.
+    \item \textbf{Propagate Values Upwards}: Backpropagate the values from the terminal nodes to their parent nodes. For nodes representing the current player's turn, choose the maximum value of its child nodes. For nodes representing the opponent's turn, choose the minimum value of its child nodes. This alternation of maximizing and minimizing gives the algorithm its name, minmax.
     \item \textbf{Choose the Best Move}: Once the values have been propagated up to the root node, the algorithm chooses the move that corresponds to the child node with the highest value. This is the move that the current player should make to maximize their chances of winning.
 \end{enumerate}
 
-The Minimax algorithm assumes that both players play optimally, which means that the current player makes decisions to maximize their own outcome, while assuming that the opponent will make decisions to minimize the current player's outcome. However, in practice, the Minimax algorithm can be computationally expensive, especially in complex games like chess, due to the exponential growth of the game tree.
+The minmax algorithm assumes that both players play optimally, which means that the current player makes decisions to maximize their own outcome, while assuming that the opponent will make decisions to minimize the current player's outcome. However, in practice, the minmax algorithm can be computationally expensive, especially in complex games like chess, due to the exponential growth of the game tree.
 
 To alleviate this issue, optimizations like Alpha-Beta Pruning are often applied. Alpha-Beta Pruning helps in reducing the number of nodes evaluated by eliminating branches that are guaranteed to be worse than previously evaluated alternatives.
 
 \newpage
 
 \begin{lstlisting}
-Minimax(s):
+minmax(s):
 
     if Terminal(s):
         return Value(s)
@@ -49,13 +49,13 @@ Minimax(s):
     if Player(s) == MAX:
         value = -inf
         for a in Actions(s):
-            value = max(value, Minimax(Result(s, a)))
+            value = max(value, minmax(Result(s, a)))
         return value
 
     if Player(s) == MIN:
         value = inf
         for a in Actions(s):
-            value = min(value, Minimax(Result(s, a)))
+            value = min(value, minmax(Result(s, a)))
         return value 
 \end{lstlisting}
 
@@ -67,7 +67,7 @@ Minimax(s):
     \item Result(state, action) takes a state and an action and returns the new state resulted from applying the action to the old state. 
 \end{itemize}
 
-The minimax algorithm is:
+The minmax algorithm is:
 
 \begin{itemize}
     \item Complete (if the tree is finite)
@@ -81,13 +81,13 @@ and has:
     \item Space complexity $O(bm)$ (depth-first exploration)
 \end{itemize}
 
-The problem with the minimax is that the number of states it has to examine is exponential in depth of the tree.
+The problem with the minmax is that the number of states it has to examine is exponential in depth of the tree.
 
 \newpage
 
 \section{$\alpha-\beta$ pruning}
 
-Alpha-Beta Pruning is an optimization technique used in the Minimax algorithm to significantly reduce the number of nodes that need to be evaluated in the search tree. It aims to improve the efficiency of the search process by eliminating branches of the game tree that are guaranteed to not affect the final decision. This optimization is particularly valuable in complex games with a large branching factor, such as chess or Go, where the full Minimax algorithm would be computationally expensive.
+Alpha-Beta Pruning is an optimization technique used in the minmax algorithm to significantly reduce the number of nodes that need to be evaluated in the search tree. It aims to improve the efficiency of the search process by eliminating branches of the game tree that are guaranteed to not affect the final decision. This optimization is particularly valuable in complex games with a large branching factor, such as chess or Go, where the full minmax algorithm would be computationally expensive.
 
 The basic idea of Alpha-Beta Pruning is to maintain two values at each node of the game tree:
 
@@ -96,6 +96,26 @@ The basic idea of Alpha-Beta Pruning is to maintain two values at each node of t
     \item \textbf{Beta}: The best value that the minimizing player has found so far along the same path.
 \end{itemize}
 
-During the Minimax search, when evaluating nodes, the algorithm compares the values of alpha and beta to determine whether certain branches of the tree can be pruned (ignored) without affecting the final decision.
+During the minmax search, when evaluating nodes, the algorithm compares the values of alpha and beta to determine whether certain branches of the tree can be pruned (ignored) without affecting the final decision.
+
+\section{Monte Carlo Tree Search (MCTS)}
+
+The Monte Carlo Tree Search (MCTS) algorithm is a heuristic search technique used for decision-making in games and other domains with a large state space and uncertain outcomes. MCTS has gained significant popularity and success in various AI applications, particularly in playing complex games like Go, chess, and poker. It was introduced as a way to address some of the limitations of traditional search algorithms like Minimax, which struggle with high branching factors and vast state spaces. \\
+
+The algorithm iteratively does simulations (rollout) of complete games to estimate the heuristic values of moves using Monte Carlo simulations. It keeps playing against itself and compute the win percentage. 
+
+\begin{itemize}
+    \item \textbf{Simulations (Rollouts) of Complete Games}:
+    MCTS simulates entire sequences of moves, referred to as \textbf{rollouts} or \textbf{playouts}, to evaluate the potential outcome of a given move. These simulations start from the current game state and proceed by selecting random moves for both players until a terminal state (win, lose, or draw) is reached. By performing these simulations, MCTS gains insight into the potential outcomes of various moves.
+    
+    \item \textbf{Estimating Heuristic Values of Moves}:
+    During each simulation, the final outcome of the game is used to estimate the value or quality of the moves made during the simulation. For example, if the simulation ends in a win for a specific player, that player's moves leading up to the win are considered favorable and are assigned a higher value. Similarly, if the simulation ends in a loss, those moves are assigned a lower value.
+    
+    \item \textbf{Monte Carlo Simulations}:
+    The term \textbf{Monte Carlo} refers to the statistical method of using random sampling to estimate results. In MCTS, Monte Carlo simulations involve performing a large number of random rollouts to approximate the probabilities of different outcomes based on the actions taken.
+    
+    \item \textbf{Self-Play and Win Percentage}:
+    MCTS often employs self-play, where it plays against itself during the simulations. By doing so, it explores a wide range of possible moves and counter-moves. During these self-play simulations, the algorithm records the win percentage of each move. For instance, if a certain move leads to a win in 70\% of the simulations, it's assigned a higher win percentage.
+\end{itemize}
 
 \end{document}
