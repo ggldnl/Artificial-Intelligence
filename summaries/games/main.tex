@@ -14,12 +14,29 @@
 
 \section{Games}
 
-Games are search problems.
+Games have played a pivotal role in the development of artificial intelligence by providing structured environments for testing and advancing AI algorithms and techniques. In the context of AI, games refer to various types of competitive and strategic activities where multiple players or agents interact according to predefined rules. These interactions make games an excellent domain to study decision-making, planning, reasoning, and optimization.
 
-\section*{Minmax}
+\section{Minmax}
 
 The most common search technique in game playing is the Minimax algorithm. 
-It is a depth-first, depth-limited, general-purpose search procedure, but it can be used in games to determine the optimal decision to make in an adversarial setting. An adversarial game is a game in which you and your opponent have opposite goals: your goal is for you to win and your opponent's goal is for them to win. Playing optimally is about ensuring the best outcome for yourself even in the worst case scenario; the worst case scenario in this case is that your opponent is playing optimally too.
+It is a depth-first, depth-limited, general-purpose search procedure, but it can be used in games to determine the optimal decision to make in an adversarial setting. An adversarial game is a game in which you and your opponent have opposite goals: your goal is for you to win and for your opponent to lose, your opponent's goal is for them to win and for you to loose. Using the minimax algorithm we suppose both players are playing optimally: playing optimally is about ensuring the best outcome for yourself even in the worst case scenario. \\
+
+The central idea behind the Minimax algorithm is to create a game tree that represents all possible moves and counter-moves, up to a certain depth, from the current game state. Each node in the tree represents a game state, and the edges represent possible moves that lead to subsequent game states. The leaves of the tree are evaluated using a heuristic function that estimates the desirability of the final outcomes from that state.
+
+\newpage
+
+Here's how the Minimax algorithm works:
+
+\begin{enumerate}
+    \item \textbf{Build the Game Tree}: Starting from the current game state, generate all possible moves and create a new node for each resulting game state. This process continues for a certain depth or until a terminal state (win, lose, or draw) is reached.
+    \item \textbf{Evaluate Terminal Nodes}: If a terminal state is reached, assign a value to that node based on the outcome of the game (e.g., +1 for a win, -1 for a loss, 0 for a draw).
+    \item \textbf{Propagate Values Upwards}: Backpropagate the values from the terminal nodes to their parent nodes. For nodes representing the current player's turn, choose the maximum value of its child nodes. For nodes representing the opponent's turn, choose the minimum value of its child nodes. This alternation of maximizing and minimizing gives the algorithm its name, Minimax.
+    \item \textbf{Choose the Best Move}: Once the values have been propagated up to the root node, the algorithm chooses the move that corresponds to the child node with the highest value. This is the move that the current player should make to maximize their chances of winning.
+\end{enumerate}
+
+The Minimax algorithm assumes that both players play optimally, which means that the current player makes decisions to maximize their own outcome, while assuming that the opponent will make decisions to minimize the current player's outcome. However, in practice, the Minimax algorithm can be computationally expensive, especially in complex games like chess, due to the exponential growth of the game tree.
+
+To alleviate this issue, optimizations like Alpha-Beta Pruning are often applied. Alpha-Beta Pruning helps in reducing the number of nodes evaluated by eliminating branches that are guaranteed to be worse than previously evaluated alternatives.
 
 \newpage
 
@@ -43,11 +60,42 @@ Minimax(s):
 \end{lstlisting}
 
 \begin{itemize}
-    \item Terminal(state) will tell us if the state is terminal (no more moves left);
+    \item Terminal(state) will tell us if the state is terminal (no more moves left or one of the two players won);
     \item Value(state) will assign a value to the state; the value should be something that the MAX player want to maximize and that the MIN player want to minimize;
     \item Player(state) will tell us which player needs to do the move;
     \item Actions(state) will tell us which actions are available to the player that must do the move;
     \item Result(state, action) takes a state and an action and returns the new state resulted from applying the action to the old state. 
 \end{itemize}
+
+The minimax algorithm is:
+
+\begin{itemize}
+    \item Complete (if the tree is finite)
+    \item Optimal (if both players play optimally)
+\end{itemize}
+
+and has:
+
+\begin{itemize}
+    \item Time complexity $O(b^m)$
+    \item Space complexity $O(bm)$ (depth-first exploration)
+\end{itemize}
+
+The problem with the minimax is that the number of states it has to examine is exponential in depth of the tree.
+
+\newpage
+
+\section{$\alpha-\beta$ pruning}
+
+Alpha-Beta Pruning is an optimization technique used in the Minimax algorithm to significantly reduce the number of nodes that need to be evaluated in the search tree. It aims to improve the efficiency of the search process by eliminating branches of the game tree that are guaranteed to not affect the final decision. This optimization is particularly valuable in complex games with a large branching factor, such as chess or Go, where the full Minimax algorithm would be computationally expensive.
+
+The basic idea of Alpha-Beta Pruning is to maintain two values at each node of the game tree:
+
+\begin{itemize}
+    \item \textbf{Alpha}: The best value that the maximizing player has found so far along the path from the root to the current node.
+    \item \textbf{Beta}: The best value that the minimizing player has found so far along the same path.
+\end{itemize}
+
+During the Minimax search, when evaluating nodes, the algorithm compares the values of alpha and beta to determine whether certain branches of the tree can be pruned (ignored) without affecting the final decision.
 
 \end{document}
