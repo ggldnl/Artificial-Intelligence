@@ -104,7 +104,7 @@ The Monte Carlo Tree Search (MCTS) algorithm is a heuristic search technique use
 
 The algorithm iteratively does simulations (rollout) of complete games to estimate the heuristic values of moves using Monte Carlo simulations. It keeps playing against itself and compute the win percentage. 
 
-\begin{itemize}
+\begin{enumerate}
     \item \textbf{Simulations (Rollouts) of Complete Games}:
     MCTS simulates entire sequences of moves, referred to as \textbf{rollouts} or \textbf{playouts}, to evaluate the potential outcome of a given move. These simulations start from the current game state and proceed by selecting random moves for both players until a terminal state (win, lose, or draw) is reached. By performing these simulations, MCTS gains insight into the potential outcomes of various moves.
     
@@ -116,6 +116,6 @@ The algorithm iteratively does simulations (rollout) of complete games to estima
     
     \item \textbf{Self-Play and Win Percentage}:
     MCTS often employs self-play, where it plays against itself during the simulations. By doing so, it explores a wide range of possible moves and counter-moves. During these self-play simulations, the algorithm records the win percentage of each move. For instance, if a certain move leads to a win in 70\% of the simulations, it's assigned a higher win percentage.
-\end{itemize}
+\end{enumerate}
 
 \end{document}
