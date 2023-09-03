@@ -3,6 +3,10 @@
 
 \usepackage{amsmath}
 
+\usepackage{comment}
+
+\usepackage[shortlabels]{enumitem}
+
 \title{Knowledge Representation}
 \author{Daniel Gigliotti}
 \date{}
@@ -36,23 +40,6 @@ We can extract information from the knowledge base with entailment. \textbf{Enta
     $\alpha$ is true in all worlds where $KB$ is true.    
 \end{center}\newpage
 
-In summary:
-\begin{itemize}
-    \item We have a \textbf{knowledge base} that is a set of sentences expressed in a particular language, subjected to syntactic rules.
-    \item Each sentence is formed by logical variables, constants, and operators.
-    \item We can assign truth values to the variables and define how the logical operators and relations function. This is called \textbf{interpretation}. Possible worlds correspond to different interpretations.
-    \item We say $m$ is a \textbf{model} of a sentence $\alpha$ if $m$ is an interpretation and $\alpha$ is true in $m$.
-    \item $M(\alpha)$ is the set of all models of $\alpha$.
-    \item The following is true:
-    \begin{equation*}
-        KB \models \alpha \iff M(KB) \subseteq M(\alpha)
-    \end{equation*}
-    \item Two sentences are \textbf{logically equivalent} iff true in the same models:
-    \begin{equation*}
-        \alpha \leq \beta \iff \alpha \models \beta \land \beta \models \alpha
-    \end{equation*}
-\end{itemize}
-
 \newpage
 
 \section{Model Checking}
@@ -62,11 +49,15 @@ The knowledge that is entailed by a $KB$ can be computed by:
     KB \models \alpha
 \end{equation*}
 and can be derived by building models and checking whether $M(KB) \subseteq M(\alpha)$.
-This approach is referred to as \textbf{model checking} and it is sort of a proof by exhaustion (enumeration), therefore not always applicable.
+This approach is referred to as \textbf{model checking} and it is sort of a proof by exhaustion (enumeration), therefore not always applicable (exponential in $n$).
+
+\section{Inference (Reasoning)}
+
+Inference is a broad term that refers to a procedure to derive new knowledge from a knowledge base. We have deductive inference and inductive inference.
 
 \section{Deduction}
 
-Another way of computing the knowledge entailed by a $KB$ is by a deduction procedure (proof):
+Deduction is a type of inference where we follow strict rules to reach a guaranteed conclusion. For example, if you know that all cats have tails, and you also know that if something has a tail then it is an animal, then you can deduce that cats are animals. \textbf{A deduction procedure is a way of computing the knowledge entailed by a $KB$ following strict rules}:
 
 \begin{equation*}
     KB \vdash_i \alpha
@@ -80,6 +71,10 @@ We use two properties to describe deduction procedures:
     \item \textbf{Soundness}: $i$ is sound if whenever $KB \vdash_i \alpha$, it is also true that $KB \models \alpha$.
     \item \textbf{Completeness}: $i$ is complete if whenever $KB \models \alpha$, it is also true that $KB \vdash_i \alpha$.
 \end{itemize}
+
+\section{Induction}
+
+Induction is a type of reasoning that involves making generalized conclusions based on specific observations. It's the process of inferring a general pattern from a limited set of examples. Inductive reasoning is used when we want to make educated guesses about things that we haven't directly observed, based on what we have observed.
 
 \newpage
 
@@ -97,6 +92,34 @@ In propositional logic, propositions are represented using variables, such as p,
     \item If $S_1$ and $S_2$ are sentences, $S_1 \lor S_2$ is a sentence (disjunction);
     \item If $S_1$ and $S_2$ are sentences, $S_1 \implies S_2$ is a sentence (implication);
     \item If $S_1$ and $S_2$ are sentences, $S_1 \iff S_2$ is a sentence (biconditional);
+\end{itemize}
+
+\newpage
+
+In propositional logic:
+\begin{itemize}
+    \item We have a \textbf{knowledge base} that is a set of sentences expressed in a particular language, subjected to syntactic rules.
+    \item Each sentence is formed by logical variables, constants, and operators.
+    \item We can assign truth values to the variables and define how the logical operators and relations function. This is called \textbf{interpretation}. Possible worlds correspond to different interpretations.
+    \begin{equation*}
+        \begin{aligned}
+            I_1 = \{\alpha = \top, \beta = \bot, \gamma = \bot \} \\    
+            I_2= \{\alpha = \bot, \beta = \bot, \gamma = \top \}
+        \end{aligned}
+    \end{equation*}
+    \item Given an interpretation, the evaluation $I \models F$ means that $F$ is true when the variables have the values of $I$.
+    %\item We say $m$ is a \textbf{model} of a sentence $\alpha$ if $m$ is an interpretation and $\alpha$ is true in $m$.
+    \item If $I \models F$, we say that $I$ is a \textbf{model} of $F$.
+    \item A knowledge base is said to be \textbf{consistent} if there is at least a model that satisfies it.
+    \item $M(F)$ is the set of all models of $F$.
+    \item The following statement holds:
+    \begin{equation*}
+        KB \models \alpha \iff M(KB) \subseteq M(\alpha)
+    \end{equation*}
+    \item Two sentences are \textbf{logically equivalent} iff true in the same models:
+    \begin{equation*}
+        \alpha \equiv \beta \iff \alpha \models \beta \land \beta \models \alpha
+    \end{equation*}
 \end{itemize}
 
 \newpage
@@ -163,23 +186,574 @@ In propositional logic, propositions are represented using variables, such as p,
 
 \newpage
 
-\section*{Inference with validity and satisfiability}
+\section{Clauses}
 
 \begin{itemize}
-    \item \textbf{Deduction theorem} (connection between inference and validity)
+
+    \item A literal is a variable or the negation of a variable.
+
+    \item \textbf{A clause is a disjunction of literals}.
+
     \begin{equation*}
-        KB \models \alpha \iff (KB \implies \alpha)\ is\ valid
+        L_1 \lor L_2 \lor ... \lor L_n
     \end{equation*}
-    \item \textbf{Reductio ad absurdum} (connection between inference and satisfiability)
+
+    \item A clause is said to be a \textbf{Definite clause} if it contains \textbf{exactly one positive literal}.
+
     \begin{equation*}
-        KB \models \alpha \iff (KB \land \neg \alpha)\ is\ unsatisfiable
+        (\neg L_1 \lor \neg L_2 \lor L_3)
     \end{equation*}
+        
+    \item A clause is said to be a \textbf{Horn clause} if it contains \textbf{at most one positive literal} $(n <= 1)$.
+
+    \begin{equation*}
+        (\neg L_1 \lor \neg L_2 \lor L_3)
+    \end{equation*}
+
+    but also:
+
+    \begin{equation*}
+        (\neg L_1 \lor \neg L_2 \lor \neg L_3)
+    \end{equation*}    
+
+    \textbf{A $KB$ is in Horn form if it is a conjunction of Horn clauses}.
+
+    \item A clause is said to be a \textbf{Goal clause} if it contains \textbf{no positive literal}.
+
+    \begin{equation*}
+        (\neg L_1 \lor \neg L_2 \lor \neg L_3)
+    \end{equation*}
+
+    \item Every formula in the $KB$ can be rewritten in \textbf{conjunctive normal form} (CNF), that is the conjunction of clauses. \\
+    
+    Knowledge base in conjunctive normal form:
+    \begin{equation*}
+        KB = \{\{A, \neg B, \neg C\}, \{\neg A\}\} \iff (A \lor \neg B \lor C) \land (\neg A)
+    \end{equation*}
+
+    \item We can use \textbf{alpha - beta formulas} to separate cunjunctions, disjunctions and implications into clauses:
+
+    \begin{center}    
+        \begin{table}[h]
+            \begin{tabular}{|c|c||c|c|}
+            \hline
+            \multicolumn{2}{c}{$\land\ based$} & \multicolumn{2}{c}{$\lor\ based$} \\
+            \hline
+            $C=\{\alpha\}$     & $C_1=\{\alpha_1\},C_2=\{\alpha_2\}$ & $C=\{\beta\}$ & $C_1=\{\beta_1, \beta_2\}$ \\
+            \hline
+            \hline
+            $\alpha=A \land B$ & $\alpha_1=A, \alpha_2=B$ & $\beta = A \lor B$ & $\beta_1=A, \beta_2=B$ \\
+            \hline
+            $\alpha = \neg (A \lor B) $ & $\alpha_1= \neg A, \alpha_2= \neg B$ & $\beta = A \implies B$ & $\beta_1=\neg A, \beta_2=B$ \\
+           \hline
+            $\alpha = \neg (A \implies B)$ & $\alpha_1= A, \alpha_2= \neg B$ & $\beta = \neg (A \land B) $ & $\beta_1=\neg A, \beta_2=\neg B$ \\
+            \hline
+            \end{tabular}
+        \end{table}
+    \end{center}
+
 \end{itemize}
 
 \newpage
 
-\section{Conjunctive Normal Form (CNF)}
+\begin{itemize}
+    \item Example of CNF conversion without alpha-beta rules:
 
+    \begin{enumerate}
+        \item $A \iff (B \lor C)$
+        \item Use biconditional elimination and get: \\
+        $(A \implies (B \lor C)) \land ((B \lor C) \implies A)$
+        \item Use implication elimination $(\alpha \implies \beta \equiv \neg \alpha \lor \beta)$ and get: \\
+        $(\neg A \lor B \lor C) \land (\neg(B \lor C) \lor A)$
+        \item Move $\neg$ inwards: \\
+        $(\neg A \lor B \lor C) \land ((\neg B \land \neg C) \lor A)$
+        \item Use the distributivity of $\lor$ over $\land$: \\
+        $(\neg A \lor B \lor C) \land (\neg B \lor A) \land (\neg C \lor A)$ \\
+        We have a conjunctive normal form
+    \end{enumerate}
+
+    \item Example of CNF conversion with alpha-beta rules:
+
+    \begin{enumerate}
+        \item $(P \implies (Q \implies (S \lor T))) \implies (T \implies Q)$
+        \item Use implication elimination and get: \\
+        $\neg (P \implies (Q \implies (S \lor T))) \lor (T \implies Q)$
+        \item Use $\beta$ rule on disjunction: \\
+        $C=\{\beta_1=\neg(P \implies (Q \implies (S \lor T))), \beta_2=(T \implies Q)\}$
+        \item Use $\alpha$ rule on $\beta_1$ (negation of implication) and get: \\
+        $C_1=\{P, (T \implies Q)\}, C_2=\{\neg(Q \implies (S \lor T)), (T \implies Q)\}$
+        \item Use $\beta$ rule on $C_1$: \\
+        $C_1=\{P, \neg T, Q\}, C_2=\{\neg(Q \implies (S \lor T)), (T \implies Q)\}$
+        \item Use $\beta$ rule on $C_2$: \\
+        $C_1=\{P, \neg T, Q\}, C_2=\{\neg(Q \implies (S \lor T)), \neg T, Q\}$
+        \item Use $\alpha$ rule on $C_2$: \\
+        $C_1=\{P, \neg T, Q\}, C_2=\{Q, \neg T, Q\}, C_3=\{\neg(S \lor T), \neg T, Q\}$
+        \item Use $\alpha$ rule on $C_3$: \\
+        $C_1=\{P, \neg T, Q\}, C_2=\{Q, \neg T, Q\}, C_3=\{\neg S, \neg T, Q\}, C_4=\{\neg T, \neg T, Q\}$
+        \item Remove double $\neg T$ from $C_4$: \\
+        $C_1=\{P, \neg T, Q\}, C_2=\{Q, \neg T, Q\}, C_3=\{\neg S, \neg T, Q\}, C_4=\{\neg T, Q\}$
+    \end{enumerate}
+    
+\end{itemize}
+
+\newpage
+
+\section{From validity and satisfiability to Inference}
+
+\begin{itemize}
+    \item \textbf{Deduction theorem}:
+    \begin{equation*}
+        KB \models \alpha \iff (KB \implies \alpha)\ is\ valid
+    \end{equation*}
+    thus, if $KB \implies \alpha$ is valid, then $KB \models \alpha$
+    \item \textbf{Reductio ad absurdum}:
+    \begin{equation*}
+        KB \models \alpha \iff (KB \land \neg \alpha)\ is\ unsatisfiable
+    \end{equation*}
+    thus, if $KB \land \neg \alpha$ is unsatisfiable, then $KB \models \alpha$
+    \item There are several ways to prove that a sentence is satisfiable (SAT problem).
+\end{itemize}
+
+\section{Proving satisfiability of a sentence}
+
+\textbf{SAT} (Boolean Satisfiability Problem) involves determining whether a given Boolean Propositional Logic formula can be satisfied by assigning truth values (true or false) to its variables. The main goal of SAT solvers is to find a valid assignment of truth values to variables that makes the entire formula true. If such an assignment exists, the formula is satisfiable, otherwise, it's unsatisfiable. The formula is usually given in conjunctive normal form (CNF). Multiple solvers exist, among which DPLL and GSAT are the most notorious. \\
+
+\textbf{GSAT} is a specific heuristic approach used to solve SAT problems. It's a local search algorithm that focuses on finding a satisfying assignment by iteratively flipping the truth values of variables in an attempt to improve the satisfaction of clauses. The algorithm starts with a random or initial assignment and then repeatedly changes the truth value of a variable to maximize the number of satisfied clauses. In GSAT, at each step, the algorithm selects the variable whose change will result in the maximum increase in satisfied clauses. This greedy approach aims to quickly move towards a satisfying assignment by making locally optimal changes. GSAT is incomplete meaning it may fail.
+
+% \textbf{UnitPropagation}
+% \textbf{DPLL}
+
+\newpage
+
+\section{Deduction in Propositional Logic}
+
+We can use inference rules to derive a proof of the interpretation truthfulness. The idea of finding a proof rather than using model checking is that the proof can ignore irrelevant propositions, no matter how many of them there are. \\
+
+\textbf{Deduction theorem}: Let $KB$ be a set of formulae. $A$ is derived from $KB$ ($KB \vdash \alpha$) if there exists a sequence of formulae $A_1$, ..., $A_n$ such that:
+
+\begin{itemize}
+    \item $\alpha$ is $A_n$;
+    \item for every $i$ between 1 and $n$, either $A_i \in KB$ or $A_i$ is a \textbf{direct derivation} of the formulae in $A_1$, ..., $A_{i-1}$ resulting from the application of an inference rule.
+\end{itemize}
+
+The sequence $A_1$, ..., $A_n$ is a proof of $\alpha$ from $KB$. \\
+
+Inference rules:
+
+\begin{itemize}
+    \item \textbf{Modus Ponens}
+    \begin{equation*}
+        \frac{\alpha \implies \beta, \alpha}{\beta}
+    \end{equation*}
+
+    \item \textbf{And Elimination}
+    \begin{equation*}
+        \frac{\alpha_1 \land \alpha_2 \land ... \land \alpha_n}{\alpha_i}
+    \end{equation*}
+    \item equivalences from the logical equivalence table
+\end{itemize}
+
+\newpage
+
+\section{Forward and Backward Chaining}
+
+Forward chaining and backward chaining are two common approaches used in artificial intelligence and knowledge representation to draw conclusions from a knowledge base. Basically they are algorithms that iteratively apply modus ponens to find the goal.
+
+\begin{itemize}
+    \item \textbf{forward chaining}, also known as data-driven reasoning, starts with the available facts and uses them to derive new conclusions or make decisions. It works by applying production rules (if-then statements) to the known facts and inferring new facts from them. The process continues iteratively, adding newly derived facts to the list of known facts, and using those facts to derive even more conclusions. \\
+
+    Think of forward chaining as building a chain of reasoning from the ground up. It's like starting with pieces of information you already have and gradually building a bigger picture by following the rules.
+
+    \item \textbf{backward chaining}, also known as goal-driven reasoning, starts with a specific goal or conclusion that needs to be proven or derived. It works by examining the available rules in reverse, trying to find a sequence of rules that lead from the goal to the known facts. This approach aims to find the necessary conditions for the goal to be true. \\
+
+    Backward chaining is like working backward from a goal to see what needs to be true in order to achieve it. It's like starting with a question and figuring out the answers step by step.
+    
+\end{itemize}
+
+\newpage
+
+\section{Resolution}
+
+Resolution is a powerful inference rule used in propositional logic to derive new logical statements from existing ones. It's a fundamental technique used in automated theorem proving, logic programming, and other areas of artificial intelligence and logic. \\
+
+The key idea of the propositional resolution is that if we have two clauses $C_1, C_2$ and one literal $L$ that appears with different sign in both $L \in C_1, \neg L \in C_2$, then we can generate a new clause by joining $C_1 \lor C_2$ and removing $L, \neg L$ from them. This because if a symbol appears with both signs in a clause (for example $C = L_1 \lor L_2 \lor \neg L_1$), then every interpretation given to $L_1$ is a model. Iterating this procedure we can simplify the knowledge base and derive new information. \textbf{Unit resolution is a special case of Resolution}. \\
+
+Let there be two clauses:
+\begin{equation*}
+    L=L_1 \lor L_2 \lor ... \lor L_n = \{L_1, L_2, ..., L_n\}
+\end{equation*}
+\begin{equation*}
+    P=P_1 \lor P_2 \lor ... \lor P_m = \{P_1, P_2, ..., P_m\}
+\end{equation*}
+
+for any $n, m$. \\
+Let there be a set of two literals, $O=\{O_l,O_p\}$, which appears in both $L$ and $P$ but with opposite sign:
+
+\begin{equation*}
+    O_1 \in L, \neg O_l = O_p \in P
+\end{equation*}
+
+We can use resolution to join $P$ and $L$ and remove $O$ from the union:
+
+\begin{equation*}
+    \frac{L\ P}{(L \cup P) \setminus O}
+\end{equation*}
+
+which will result in this:
+
+\begin{equation*}
+    (L_1 \lor L_2 \lor ... \lor L_n \lor P_1 \lor P_2 \lor ... \lor P_m) \setminus (O_l \lor O_p)
+\end{equation*}
+
+\newpage
+
+Resolution example: \\
+
+Given the following $KB$:
+
+\begin{equation*}
+    KB = \{C_1=\{\neg P, Q\, \neg P\}, C_2=\{P, \neg L\}\}
+\end{equation*}
+
+and the formula $\alpha = \{Q, \neg L\}$, we want to know if $KB \implies \alpha$, that is $(KB \lor \neg \alpha)$ is unsatisfiable, that is $(KB \lor \neg \alpha) \vdash_R \{\}$.
+
+\begin{enumerate}
+    \item Apply refactoring to $C_1$ to remove double $\neg P$: \\
+    $KB = \{C_1=\{\neg P, Q\}, C_2=\{P, \neg L\}\}$
+    \item Add $\neg \alpha$ to the knowledge base and apply resolution. \\
+    $(KB \lor \neg \alpha) = \{C_1=\{\neg P, Q\}, C_2=\{P, \neg L\}, C_3 = \{\neg Q\}, C_4 = \{L\} \}$ \\
+    $C_3$ and $C_4$ are the result of $\neg \alpha$.
+    \item Resolve $C_1$ with $C_2$:
+    \begin{equation*}
+        C_5 = \frac{\{\neg P, Q\}\ \{P, \neg L\}}{\{\neg L, Q\}} = \{\neg L, Q\}
+    \end{equation*}
+    We end up with:\\
+    $C_1=\{\neg P, Q\}, C_2=\{P, \neg L\}, C_3 = \{\neg Q\}, C_4 = \{L\}, C_5=\{\neg L, Q\}$
+    \item Resolve $C_3$ and $C_5$:
+    \begin{equation*}
+        C_6 = \frac{\{\neg Q\}\ \{\neg L, Q\}}{\{\neg L\}} = \{\neg L\}
+    \end{equation*}
+    We end up with:\\
+    $C_1=\{\neg P, Q\}, C_2=\{P, \neg L\}, C_3 = \{\neg Q\}, C_4 = \{L\}, C_5=\{\neg L, Q\}, C_6=\{\neg L\}$
+    \item Resolve $C_4$ and $C_6$:
+    \begin{equation*}
+        C_6 = \frac{\{L\}\ \{\neg L\}}{\{\}} = \{\}
+    \end{equation*}
+    We obtain the empty clause $\{\}$. We just demonstrated that $(KB \lor \neg \alpha) \vdash_R \{\}$ and thus $(KB \models \alpha)$ since $(KB \lor \neg \alpha)$ is unsatisfiable. 
+\end{enumerate}
+
+\newpage
+
+\textbf{Exercise 1} \\
+
+Let $A, B, C$ be propositional symbols. Given:
+
+\begin{equation*}
+    KB = \{A \implies C, B \implies C, A \lor B \}
+\end{equation*}
+
+tell whether the formula $C$ can be derived from $KB$ using Modus Ponens and Resolution.
+
+\begin{itemize}
+    \item Modus Ponens: \\
+    $C$ cannot be derived using Modus Ponens as we only know that $A \lor B$ is true, but we don't know which one between $A$ and $B$ is true. We can neither apply Modus Ponens to $A$ and $A \implies C$ nor to $B$ and $B \implies C$.
+    \item Resolution: \\
+    \begin{equation*}
+        \{ \{\neg A \lor C\}_1, \{\neg B \lor C\}_2 \{ A \lor B\}_3, \{ \neg C\}_4\}
+    \end{equation*}
+    with $\{\neg C\}_4$ being the negation of the thesis. \\
+
+    From $\{\}_1$ and $\{\}_3$ we have $\{B \lor C\}_5$. \\
+    From $\{\}_2$ and $\{\}_5$ we have $\{C\}_6$. \\
+    From $\{\}_4$ and $\{\}_6$ we have $\{\}$. \\
+\end{itemize}
+
+\newpage
+
+\textbf{Exercise 2} \\
+
+Consider the following set of sentences:
+\begin{enumerate}
+    \item If it rains, then it is wet.
+    \item If it is wet, then it does not rain.
+    \item It rains.
+\end{enumerate}
+
+\begin{enumerate}[(a)] % (a), (b), (c), ...
+    \item Write the corresponding propositional formulae.
+
+        \begin{enumerate}
+            \item $R \implies W$
+            \item $W \implies \neg R$
+            \item $R$
+        \end{enumerate}
+    
+    \item Prove, via resolution, that they are inconsistent.
+
+    \begin{equation*}
+        \{ \{\neg R \lor W\}_1, \{\neg W \lor \neg R\}_2 \{ R\}_3\}
+    \end{equation*}
+
+    To prove inconsistency with resolution we just need not to add the negation of the thesis to the $KB$.
+
+    From $\{\}_1$ and $\{\}_2$ we have $\{\neg R\}_4$. \\
+    From $\{\}_3$ and $\{\}_4$ we have $\{\}$. \\
+    
+\end{enumerate}
+
+\newpage
+
+\section{First Order Logic}
+
+Whereas Propositional Logic assumes the world contains facts, First Order Logic assumes the world contains:
+\begin{itemize}
+    \item \textbf{Objects}: variables and constants. A set $D$ called domain is the set containing all the objects.
+    \item \textbf{Functions} are used to represent operations that map elements from one domain to another. A function assigns a unique output value to each input value.
+    \item \textbf{Relations} (predicate symbols) are used to represent sets of ordered tuples of elements from one or more domains. Relations can be unary (relating one element to itself), binary (relating two elements), ternary (relating three elements), and so on. They are often used to express properties, connections, or comparisons between elements. For example, "less than," "equal to," "ancestor of," and "divides" are examples of relations. 
+    \item \textbf{Propositional connectives} $(\neg, \lor, \land)$ and quantifiers $(\exists, \forall)$. 
+\end{itemize}
+
+\textbf{Terms} are built upon variables, constants and function symbols. Examples are $f(x,c),\ d,\ h(x),\ ...$. They result in an element of the domain.
+\textbf{Formulae} are built upon literals, which are predicates applied to terms. Examples are $P(x, f(c,d)),\ P(c) \land R(d),\ \exists x P(f(x,c)),\ ...$ They result in true/false.
+
+\begin{comment}
+    
+\section{Interpretation and model in FOL}
+
+A \textbf{model} in First Order Logic comprises the domain $D$ and an evaluation of everything but the variables. An \textbf{interpretation} gives value to variables (an element of the domain, not true/false like in propositional logic). \\
+
+Formally: \\
+Given a domain $D$, a model assigns:
+
+\begin{itemize}
+    \item an element of $D$ to each constant;
+    \item a function $f: D^n \rightarrow D$ to each function symbol of arity $n$;
+    \item a function $f: D^n \rightarrow \{true,\ false\}$ to each predicate symbol of arity $n$;
+\end{itemize}
+
+\begin{flushleft}
+    An interpretation $\mu$ assigns an element of $D$ to every variable.
+\end{flushleft}
+
+\end{comment}
+
+\newpage
+
+Formally: \\
+
+\section*{Language}
+
+A \textbf{structure} $\mathcal{U}$ for the language $\mathcal{L}$ is a pair $\mathcal{U}=<D, I>$ where:
+\begin{itemize}
+    \item D is a non empty set called \textbf{domain} of $\mathcal{U}$
+    \item I is a function that maps
+    \begin{itemize}
+        \item every constant symbol $c$ into an element $c^I \in D$;
+        \item every n-ary function symbol $f$ into a function $f^I: D^n \rightarrow D$;
+        \item every n-ary predicate symbol $p$ into a n-ary relation $p^n \subseteq D$;
+    \end{itemize}
+\end{itemize}
+
+\section*{Validity and satisfiability}
+
+A formula $A \in \mathcal{L}$ is \textbf{valid} iff it is true in every structure $\mathcal{U}$ of $\mathcal{L}$. This is denoted with $\models A$. \\
+A set of formulae $\Gamma$ is \textbf{satisfiable} if there exists a structure $\mathcal{U}$ such that for every $A \in \Gamma$, $A$ is true in $\mathcal{U}$.
+
+\section*{Entailment and equivalence}
+
+Let $\Gamma$ be a set of formulae and $A$ a closed formula. $\Gamma$ logically entails $A$ ($\Gamma \models A$) iff every model of $\Gamma$ is also a model of $A$: for every structure $\mathcal{U}$ of the language $\mathcal{L}$ such that $\Gamma$ is true in $\mathcal{U}$, then $A$ is true in $\mathcal{U}$.\\
+
+Two formulas $P$ and $Q$ are \textbf{semantically (or logically) equivalent} ($P \equiv Q$) if for every structure $\mathcal{U}$ we have that:
+
+\begin{center}
+    $P$ is true in $\mathcal{U} \iff Q$ is true in $\mathcal{U}$.
+\end{center}
+
+\newpage
+
+\section{Unification}
+
+Unification is the process of making two different logical atomic expressions identical by finding a substitution. $Unify(P, Q)$ takes two atomic (i.e. single predicates) sentences $P$ and $Q$ and returns a substitution that makes $P$ and $Q$ identical. \\
+
+TODO
+
+\newpage
+
+\begin{comment}
+
+\section{Inference in FOL}
+
+First order inference can be done by converting the $KB$ to propositional logic and using propositional inference on the result. To achieve this, we need to replace the quantifiers as they does not exist in propositional logic.
+
+\begin{itemize}
+    \item \textbf{Universal instantiation} is used to remove universal quantifiers:
+
+    \begin{equation*}
+        \frac{\forall v\ \alpha}{Subst(\{v/g\}, \alpha}
+    \end{equation*}
+    for any variable $v$ and ground term $g$.\\
+    Example:\\
+    \begin{equation*}
+        \forall x, y\ Loves(x,y)
+    \end{equation*}
+    We can remove the universal quantifier by substituting the variables with ground terms, like this:
+    \begin{equation*}
+        Subst(\{x/Giorgia,y/Daniel\},\ Loves(x,y))\ =\ Loves(Giorgia, Daniel)\ (hopefully)
+    \end{equation*}
+        
+    \item \textbf{Existential instantiation} is used to remove universal quantifiers by replacing the variable with a single constant symbol $C$ that \textbf{do not appear elsewhere} in the $KB$. After applying the EI, the $KB$ will not be logically equivalent to the old one, but will be satisfiable exactly when the original $KB$ is satisfiable (EI preserves satisfiability).
+    \begin{equation*}
+        \exists x\ Game(x)\ \land\ Play(Daniel, x) 
+    \end{equation*}
+    We can substitute like this:
+    \begin{equation*}
+        Game(G_1)\ \land\ Play(Daniel, G_1) 
+    \end{equation*}
+    where $G_1$ is a generic constant symbol. By the way this is not true because i have to study AI for the exam.
+    
+\end{itemize}
+
+After the conversion we can apply propositional inference methods like forward and backward chaining. \\
+Another way to do FOL inference is \textbf{Generalized Modus Ponens}. In order to use GMP we should use \textbf{unification} and \textbf{standardizing apart} to find the \textbf{most general unifier}.
+
+\end{comment}
+
+\newpage
+
+\section{Inference in First Order Logic}
+
+First order inference can be done applying inference rules, among which we focus on:
+\begin{itemize}
+    \item Modus Ponens;
+    \item Resolution. We Apply resolution by converting the $KB$ to propositional logic and using propositional inference on the result.
+\end{itemize}
+ 
+\section{Resolution}
+
+Resolution is another inference rule. We Apply resolution by converting the $KB$ to propositional logic and using propositional inference on the result. To achieve this we need to transform each sentence in the $KB$ into Conjunctive Normal Form. Fortunately, every sentence in FOL can be converted into an inferentially equivalent sentence in CNF. The difference between propositional CNF and FOL CNF is the presence of the existential quantifier. Universal quantifiers are simply removed.
+
+\begin{itemize}
+    \item \textbf{Universal instantiation} is used to remove universal quantifiers:
+
+    \begin{equation*}
+        \frac{\forall v\ \alpha}{Subst(\{v/g\}, \alpha}
+    \end{equation*}
+    for any variable $v$ and ground term $g$.\\
+    Example:\\
+    \begin{equation*}
+        \forall x, y\ Loves(x,y)
+    \end{equation*}
+    We can remove the universal quantifier by substituting the variables with ground terms, like this:
+    \begin{equation*}
+        Subst(\{x/Giorgia,y/Daniel\},\ Loves(x,y))\ =\ Loves(Giorgia, Daniel)\ (hopefully)
+    \end{equation*}
+        
+    \item \textbf{Existential instantiation} is used to remove universal quantifiers by replacing the variable with a single constant symbol $C$ that \textbf{do not appear elsewhere} in the $KB$. After applying the EI, the $KB$ will not be logically equivalent to the old one, but will be satisfiable exactly when the original $KB$ is satisfiable (EI preserves satisfiability).
+    \begin{equation*}
+        \exists x\ Game(x)\ \land\ Play(Daniel, x) 
+    \end{equation*}
+    We can substitute like this:
+    \begin{equation*}
+        Game(G_1)\ \land\ Play(Daniel, G_1) 
+    \end{equation*}
+    where $G_1$ is a generic constant symbol. By the way this is not true because i have to study AI for the exam.
+    
+\end{itemize}
+
+\section{Prenex Normal Form}
+
+Before proceding with the Skolem Normal Form, we must describe the Prenex Normal Form. As for the CNF that needs the negation symbols $\neg$ to be pushed inward, the PNF wants the quantifier symbols to be moved outwards to the left side of the formula.
+\begin{equation*}
+    [\forall x \phi(x) \land \forall y \psi(y)] \implies \exists z \rho(z)
+\end{equation*}
+We transform the above sentence in PNF just by pushing the quantifiers to the left:
+\begin{equation*}
+    \forall x \forall y \exists z [[\phi(x) \land \psi(y)] \implies \rho(z)]
+\end{equation*}
+
+Given a generic formula $\phi$ the steps for transforming it into PNF are the following:
+\begin{itemize}
+    \item Build a formula $\phi'$ where only $\land, \lor, \exists, \forall$ occur, negation is pushed inwards and double negations are eliminated.
+    \item Rename bound variables so that each quantifier uses a different variable (this technique is called \textbf{standardize apart}).
+    \item Build the PNF formula moving all the quantifiers to the left.
+\end{itemize}
+
+\newpage
+
+\section{Skolem Normal Form}
+
+We can't simply use EI since by doing so we assume there exists an element, which we don't know, that satisfy the existential property. Consider the following sentence:
+
+\begin{center}
+    "Everyone has a heart"
+\end{center}
+that is translated in FOL as:
+\begin{center}
+    $\forall x[Person(x) \implies \exists y\ Heart(y)\ \land\ Has(x,y)]$
+\end{center}
+If we use EI we obtain:
+\begin{center}
+    $\forall x[Person(x) \implies Heart(H)\ \land\ Has(x, H)]$
+\end{center}
+but the sentence becomes:
+\begin{center}
+    "Everyone has the heart H"
+\end{center}
+
+For this kind of problem we need a function which takes as input a person and returns the person's heart. Let us denote this function as $F(x)$, called \textbf{Skolem function}. The above sentence becomes:
+\begin{center}
+    $\forall x[Person(x) \implies Heart(F(x))\ \land\ Has(x, F(x))]$
+\end{center}
+
+\section{Conjunctive Normal Form}
+
+We obtain the Conjunctive Normal Form from the Skolem Normal Form by dropping the universal quantifier with UI and then proceeding with the usual Propositional Logic rules to simplify the formula.
+
+\newpage
+
+Transform the following sentence in FOL:
+
+\begin{center}
+    Everyone who loves all animal is loved by someone.
+\end{center}
+
+\begin{equation*}
+    \forall x [\forall y\ Animal(y) \implies\ Loves(x, y)] \implies [\exists y\ Loves(y, x)]
+\end{equation*}
+The steps for reducing the sentence into CNF are the following:
+
+\begin{enumerate}
+    \item Eliminate implication:
+    \begin{equation*}
+        \forall x [\neg \forall y \neg Animal(y) \lor Loves(x, y)] \lor [\exists y\ Loves(y, x)]
+    \end{equation*}
+    \item Move $\neg$ inwards:
+    \begin{equation*}
+        \forall x [\exists y \neg \neg Animal(y) \land \neg Loves(x, y)] \lor [\exists y Loves(y, x)]
+    \end{equation*}
+    \begin{equation*}
+        \forall x [\exists y\ Animal(y) \land \neg Loves(x, y)] \lor [\exists y\ Loves(y, x)]
+    \end{equation*}
+    \item Standardize variables (removing variables with the same name):
+    \begin{equation*}
+        \forall x [\exists y\ Animal(y) \land \neg Loves(x,y)] \lor [\exists z\ Loves(z, x)]
+    \end{equation*}
+    The formula is now in \textbf{PNF}.
+    \item Skolemize to remove the existential quantifier, using two skolem functions $F(x), G(z)$ not present in the $KB$:
+    \begin{equation*}
+        \forall x [Animal(F(x)) \land \neg Loves(x,F(x))] \lor [Loves(G(x), x)]
+    \end{equation*}
+    The formula is now in \textbf{SNF}.
+    \item Drop universal quantifier using UI:
+    \begin{equation*}
+        [Animal(F(x)) \land \neg Loves(x,F(x))] \lor Loves(G(x), x)
+    \end{equation*}
+    \item Distribution over $\land, \lor$ to obtain the SNF with two clauses:
+    \begin{equation*}
+        [Animal(F(x)) \lor Loves(G(x), x)] \land [\neg Loves(x, F(x)) \lor Loves(G(x), x)]
+    \end{equation*}
+    The formula is now in \textbf{CNF}
+\end{enumerate}
 
 
 \end{document}
