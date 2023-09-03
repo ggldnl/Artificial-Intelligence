@@ -1,0 +1,63 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+
+\usepackage{algorithm2e}
+
+\usepackage{amsmath}
+
+\title{Constraint Satisfaction Problems}
+\author{Daniel Gigliotti}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Constraint Satisfaction Problems}
+
+Constraint Satisfaction Problems (CSPs) involve finding a solution that satisfies a set of constraints or conditions. These problems are commonly used in various domains, including scheduling, planning, optimization, and decision-making.
+
+\begin{center}
+    Constraint Satisfaction Problem: find an \textbf{assignment} \\ of values for each variable from its respective domain \\ such that every constraint is satisfied.
+\end{center}
+
+Constraint Satisfaction Problems consist of:
+\begin{itemize}
+    \item A set of \textbf{variables}
+    \begin{equation*}
+        V = \{v_1, v_2, ..., v_n\}
+    \end{equation*}
+    \item A set of \textbf{domains}, one for each variable
+    \begin{equation*}
+        D = \{D_{v_1}, D_{v_2}, ..., D_{v_n}\}
+    \end{equation*}
+    \item A set of \textbf{constraints} (binary relations), conditions that the solution must satisfy
+    \begin{equation*}
+        C = \{C_{\{u, v\}}\}
+    \end{equation*}
+    \begin{equation*}
+        u, v \in V, u \neq v, C_{\{u, v\}} \in C
+    \end{equation*}
+\end{itemize}
+
+We can visualize a CSP with a \textbf{constraint graph}, that is an undirected graph with variables as vertices and constraints as edges (the graph has an arc $\{u, v\}$ iff $C_uv \in C$. \\
+
+A \textbf{partial assignment} assigns \textbf{some} variables to values from their respective domains. \\
+A \textbf{total assignment} is an assignment defined on all the variables. \\
+We say that a partial assignment is \textbf{consistent} if it does not violate any constraint.\\
+A total assignment that is consistent is a \textbf{solution} for the problem.\\
+A problem $\gamma$ is \textbf{solvable} if there is a total consistent assignment $\alpha$ that is a solution for $\gamma$; if such solution does not exists, the problem is \textbf{inconsistent}.\\
+Let $\alpha$ be a partial assignment; we say that $\alpha$ can be \textbf{extended to a solution} if there exists a solution $\alpha'$ that agrees with $\alpha$ on the variables where $\alpha$ is defined. \\
+
+An algorithm is \textbf{complete} if it terminates with a solution when one exists.
+An algorithm is \textbf{sound} if it does not yield any results that are untrue.
+
+\section{Backtracking}
+
+Backtracking is a general algorithmic technique used to solve constraint satisfaction problems very efficiently. It is much better than enumerating and solution-checking all total assignments because a partial assignment that is already inconsistent is excluded and no longer clutters when computing the solution. \\
+
+The naive form of backtracking is the following:
+
+
+
+\end{document}
