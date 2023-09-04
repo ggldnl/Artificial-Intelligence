@@ -1,7 +1,7 @@
 \documentclass{article}
 \usepackage{graphicx} % Required for inserting images
 
-\usepackage{algorithm2e}
+\usepackage{listings}
 
 \usepackage{amsmath}
 
@@ -56,8 +56,213 @@ An algorithm is \textbf{sound} if it does not yield any results that are untrue.
 
 Backtracking is a general algorithmic technique used to solve constraint satisfaction problems very efficiently. It is much better than enumerating and solution-checking all total assignments because a partial assignment that is already inconsistent is excluded and no longer clutters when computing the solution. \\
 
-The naive form of backtracking is the following:
+\begin{flushleft}
+    The naive form of backtracking is the following:
+\end{flushleft}
 
+\begin{lstlisting}[language=Python, mathescape=true, escapeinside={(*}{*)}]
+def naive_backtracking($\gamma$, $\alpha$):
 
+    if (*$\alpha$ is inconsistent with $\gamma$:*)
+        return "inconsistent"
+
+    if (*$\alpha$ is a total assignment:*)
+        return $\alpha$
+
+    (*select \textbf{some} variable $v$ for which $\alpha$ is not defined*)
+    (*for each $d \in D_v$ \textbf{in some order} do:*)
+        (*$\alpha' := \alpha \cup \{v=d\}$ (\textbf{instantiate the variable $v$ with $d$})*)
+        (*$\alpha'' := $ naive\_backtracking($\gamma, \alpha' $)*)
+        if (*$\alpha''$ is not inconsistent:*)
+            return $\alpha''$
+
+    return "inconsistent"
+    
+\end{lstlisting}
+
+Backtracking recursively instantiate variables one by one, backing up out of a search branch if the current partial assignment is already inconsistent. Backtracking does not recognize $\alpha$ that cannot be extended to a solution, unless $\alpha$ is already inconsistent. We can employ \textbf{inference} for this and speed up the algorithm. Other potential improvement points are highlighted in bold.\\
+
+Backtracking is \textbf{complete}: it will find the solution.
+
+\newpage
+
+\begin{itemize}
+    \item A widely used \textbf{variable ordering strategy} is to \textbf{choose the most constrained variable first}: this way we reduce the branching factor (number of sub-trees generated for the variable) and thus reduce the size of the search tree.
+    \item A widely used \textbf{value ordering strategy} is to \textbf{choose the least constraining value first}: this way we increase the chances not to rule out the solutions below the current node. 
+\end{itemize}
+
+\newpage
+
+\section{Inference}
+
+The backtracking algorithm can be extended with inference techniques. Inference reduces the search space. 
+
+\begin{center}
+    \textbf{Inference}: adding constraints without losing solutions; \\ we obtain an equivalent network with a tighter description \\ and hence a smaller number of consistent partial assignments.
+\end{center}
+
+We deduce additional constraints (unary or binary) that follows from the already known constraints and hence are satisfied in all solutions. \\
+
+We have two inference methods:
+\begin{itemize}
+    \item Forward checking;
+    \item Arc consistency;
+\end{itemize}
+
+Two networks $\gamma$ and $\gamma'$ are equivalent if $\gamma$ has the same solutions as $\gamma'$. A network $\gamma$ is tighter than $\gamma'$ if $\gamma$ has the same constraints as $\gamma'$ plus some others.
+
+\begin{itemize}
+    \item $\gamma \subset \gamma' \rightarrow \gamma$ is strictly tighter than $\gamma'$
+    \item $\gamma \subseteq \gamma' \rightarrow \gamma$ is tighter than $\gamma'$
+\end{itemize}
+
+\textbf{Equivalence + tightness = inference}. Let $\gamma$ and $\gamma'$ be constraint networks such that $\gamma \equiv \gamma'$ ($\gamma$ is equivalent to $\gamma'$) and $\gamma' \subset \gamma$ ($\gamma'$ is tighter than $\gamma$). Then $\gamma'$ has the same solutions as $\gamma$ (definition of equivalence), but less consistent partial assignments than $\gamma$:
+\begin{center}
+    $\gamma'$ is a better encoding of the underlying problem.
+\end{center}
+
+Given a total assignment $\alpha$:
+\begin{itemize}
+    \item if $\alpha$ is consistent with $\gamma$, it could be inconsistent with $\gamma'$.
+    \item if $\alpha$ cannot be extended to a solution in $\gamma$, the same thing holds for $\gamma'$ ($\gamma \equiv \gamma'$).
+\end{itemize}
+
+\newpage
+
+\begin{lstlisting}[language=Python, mathescape=true, escapeinside={(*}{*)}]
+def naive_backtracking($\gamma$, $\alpha$):
+
+    if (*$\alpha$ is inconsistent with $\gamma$:*)
+        return "inconsistent"
+
+    if (*$\alpha$ is a total assignment:*)
+        return $\alpha$
+
+    # inference
+    (*\textbf{$\gamma' :=$ a copy of $\gamma$}*)
+    (*\textbf{$\gamma' :=$ inference($\gamma'$)}*)
+    (*\textbf{if exists $v$ with $D_v'=\theta$:}*)
+        (*\textbf{return "inconsistent"}*)
+
+    (*\textbf{select the most constrained variable $v$ for which $\alpha$ is not defined}*)
+    (*\textbf{for each $d \in D_v$ (least constraining value)}:*)
+        (*$\alpha' := \alpha \cup \{v=d\}$*)
+        (*$\alpha'' := $ naive\_backtracking($\gamma, \alpha' $)*)
+        if (*$\alpha''$ is not inconsistent:*)
+            return $\alpha''$
+
+    return "inconsistent"
+    
+\end{lstlisting}
+
+Inference($\gamma$) is any procedure that delivers a tighter equivalent network.
+\begin{itemize}
+    \item \textbf{forward checking}: from assigned to unassigned variables; after an assignment to a variable, look at the constraints of that variable, take the other end of each constraint (since it is a binary constraint) and remove the values of that end that would not comply with the assignment just made.
+    \item \textbf{arc consistency}. \\
+    \begin{center}
+        \textbf{Consistency}: for every constraint and every domain value, \\ at least one value on the other side of the constraint \\ needs to make the constraint valid.
+    \end{center}
+    \begin{itemize}
+        \item \textbf{Revise($\gamma, u, v$)} is an algorithm enforcing consistency of $u$ relative to $v$ ($O(k^2)$), for just a pair of variables.
+        \item \textbf{AC-1}: apply Revise($\gamma, u, v$) up to a fixed point with redundant computations.
+        \item \textbf{AC-3}: apply Revise($\gamma, u, v$) up to a fixed point remembering the potentially inconsistent variable pairs.
+    \end{itemize}
+\end{itemize}
+
+\newpage
+
+\section*{Forward Checking}
+\begin{lstlisting}[language=Python, mathescape=true, escapeinside={(*}{*)}]
+def ForwardChecking($\gamma$, $a$):
+
+    (*for each $v$ where $a(v) = d'$ is defined do:*)
+        (*for each $u$ where $a(u)$ is undefined and $C_{u,v} \in C$ do:*)
+        
+            # only leave valid values in $D_u$, values that satisfy 
+            # the constraints of $u$ with $v$
+            $D_u := \{d | d \in D_u, (d, d') \in C_{u,v}\}$
+
+    return $\gamma$
+
+\end{lstlisting}
+
+\section*{Revise}
+\begin{lstlisting}[language=Python, mathescape=true, escapeinside={(*}{*)}]
+def Revise($\gamma$, $u$, $v$):
+
+    (*for each $d \in D_u$:*)
+        (*if there is no value $\in D_v$ for which $C_{u, v}$ is satisfied:*)
+            (*remove $d$ from $D_u$*)
+            $D_u := D_u / \{d\}$
+
+    return $\gamma$
+
+\end{lstlisting}
+
+\section*{AC-1}
+\begin{lstlisting}[language=Python, mathescape=true, escapeinside={(*}{*)}]
+def AC1($\gamma$):
+
+    changes_made = False
+    while !changes_made:
+
+        for each constraint $C_{u, v}$:
+        
+            $\gamma' = Revise(\gamma, u, v)$
+            if $D_u$ reduces:
+                changes_made = True
+            
+            $\gamma' = Revise(\gamma, v, u)$
+            if $D_v$ reduces:
+                changes_made = True
+
+    return $\gamma$
+
+\end{lstlisting}
+
+\section*{AC-3}
+\begin{lstlisting}[language=Python, mathescape=true, escapeinside={(*}{*)}]
+def AC3($\gamma$):
+
+    $M := \emptyset$
+    (*for each constraint $C_{u,v} \in C$ do:*)
+        $M := M \cup \{(u,v), (v,u)\}$
+
+    (*while $M \neq \emptyset$ do:*)
+        (*remove any element $(u, v)$ from $M$*)
+        $Revise(\gamma, u, v)$
+        (*if $D_u$ has changed in the call to Revise, then:*)
+            (*for each constraint $C_{w, u} \in C$ where $w \neq u$ do:*)
+                $M := M \cup \{(w,u)\}$
+
+    return $\gamma$
+
+\end{lstlisting}
+
+\section*{AcyclicCG}
+\begin{lstlisting}[language=Python, mathescape=true, escapeinside={(*}{*)}]
+def AcyclicCG($\gamma$):
+
+    # get a directed tree from $\gamma$ picking an arbitrary
+    # variable $v$ as root and directing arcs outwards
+    $\gamma' \leftarrow\ GetDirectedTree(\gamma, v)$
+
+    # order the variables topologically i.e. such that each
+    # vertex is ordered before its children; denote that 
+    # by $v_1, v_2, ..., v_n$
+    vertex_list = $Sort(\gamma'$)
+
+    # for $i := n, n - 1, ..., 2$
+    for i in range(len(vertex_list), 2, -1):
+        $Revise(\gamma, v_{parent(i)}, v_i)$
+        if $D_p = \emptyset$:
+            return "inconsistent"
+
+    # now every variable is arc consistent relative to its children.
+    # Run backtracking with inference with forward checking using the 
+    # variable order $v_1, v_2, ..., v_n$
+    $Backtrack(vertex_list)$
+
+\end{lstlisting}
 
 \end{document}
