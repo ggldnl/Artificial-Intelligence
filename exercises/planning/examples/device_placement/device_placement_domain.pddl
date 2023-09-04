@@ -11,8 +11,7 @@
 
 (define (domain device_placement_domain)
 	
-	(:requirements :strips)
-	(:requirements :equality) ; needed in order to use =
+	(:requirements :strips :equality :negative-preconditions)
 	
 	(:predicates 
 		(at ?x ?y) 

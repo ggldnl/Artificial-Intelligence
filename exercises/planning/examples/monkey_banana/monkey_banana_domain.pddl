@@ -25,11 +25,12 @@
 ;                 INIT                                      GOAL
 
 (define (domain monkey_banana_domain)
-    (:requirements :strips)
+    (:requirements :strips :negative-preconditions)
     (:predicates
         (at ?O ?L)          ; object ?O is at location ?L 
         (location ?O)    ; ?O is a location
         (monkey ?O)      ; ?O is a monkey
+        (bananas ?O)     ; ?O are bananas
         (box ?O)         ; ?O is a box
         (above ?O)    ; ?O is at lvl 1 (above)
         (below ?O)    ; ?O is at lvl 0 (below)
