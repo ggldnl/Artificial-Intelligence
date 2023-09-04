@@ -7,7 +7,7 @@
 
 (define (domain basic_grid_domain)
 	
-	(:requirements :strips)
+	(:requirements :strips :negative-preconditions)
 	
 	(:predicates (at ?x) (adj ?x ?y) (obs ?x))
 	
