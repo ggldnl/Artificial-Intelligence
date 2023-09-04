@@ -147,7 +147,7 @@ def backtracking_with_inference($\gamma$, $\alpha$):
     (*\textbf{select the most constrained variable $v$ for which $\alpha$ is not defined}*)
     (*\textbf{for each $d \in D_v$ (least constraining value)}:*)
         (*$\alpha' := \alpha \cup \{v=d\}$*)
-        (*$\alpha'' := $ naive\_backtracking($\gamma, \alpha' $)*)
+        (*$\alpha'' := $ backtracking\_with\_inference($\gamma, \alpha' $)*)
         if (*$\alpha''$ is not inconsistent:*)
             return $\alpha''$
 
