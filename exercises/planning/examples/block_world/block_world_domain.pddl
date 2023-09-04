@@ -15,7 +15,7 @@
 ;                 INIT                                      GOAL
 
 (define (domain block_world_domain)
-    (:requirements :equality)
+    (:requirements :equality :negative-preconditions)
     (:predicates (on ?B ?O) (clear ?O) (table ?O) (block ?O))
     (:action putOn
         
