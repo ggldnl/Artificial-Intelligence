@@ -1,6 +1,10 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 
+% trees
+\usepackage{tikz}
+\usetikzlibrary{trees}
+
 % for the thumbs
 \usepackage{fontawesome}
 
@@ -130,11 +134,11 @@ An action $a$ with $Preconditions(a) = q$ is \textbf{applicable} in a state $s$ 
 \begin{lstlisting}[language=PDDL]
     (:action move
         :parameters ?agent ?from ?to
-        :preconditions( and
+        :precondition( and
             (at ?agent ?from) (adj ?from ?to)
             (agent ?agent) (location ?from) (location ?to)
         )
-        :effects( and
+        :effect( and
             (not (at ?agent ?from)) (at ?agent ?to)
         )
     )
@@ -223,6 +227,35 @@ The algorithm works by incrementally expanding the planning graph, starting from
 \begin{itemize}
     \item the \textbf{forward search} expands the planning graph by adding new layers and propositions;
     \item the \textbf{backward search} checks for conflicts and determines if the goal state is reachable.
+\end{itemize}
+
+At each step, the algorithm tries to extract a solutiong when the goal literals appear in the last computed level and it continues until two consecutive levels are identical, i.e. the graph has \textbf{leveled off}. A literal that does not appear in the final level of the graph cannot be reached by any plan. The cost of achieving any goal literal is given by the level where it occurs in the planning graph.
+
+\vspace{2cm}
+
+\begin{center}
+    \begin{tikzpicture}
+        
+        \node[shape=circle, draw=black, minimum size=1.2cm] (A) at (0,0) {$S_0$};
+        \node[shape=circle, draw=black, minimum size=1.2cm] (B) at (2,0) {$A_0$};
+        \node[shape=circle, draw=black, minimum size=1.2cm] (C) at (4,0) {$S_1$};
+        \node[shape=circle, draw=black, minimum size=1.2cm] (D) at (6,0) {$A_1$};
+        \node[shape=circle, draw=black, minimum size=1.2cm] (E) at (8,0) {$S_2$};
+        \node[shape=circle, draw=black, minimum size=1.2cm] (F) at (10,0) {$...$};
+        
+    \begin{scope}[every edge/.style={draw=black}]
+
+        \draw [-stealth](A) edge node[left] {} (B);
+        \draw [-stealth](B) edge node[left] {} (C);
+        \draw [-stealth](C) edge node[left] {} (D);
+        \draw [-stealth](D) edge node[left] {} (E);
+        \draw [-stealth](E) edge node[left] {} (F);
+
+    \end{scope}
+        
+    \end{tikzpicture}
+\end{center}
+
 \newpage
 
 \section{Total-Order Planning (TOP)}
@@ -245,7 +278,7 @@ A \textbf{partial-order plan} specifies all actions that need to be taken, but s
 \begin{itemize}
     \item A \textbf{set of actions} that makes up the steps for the plan; an empty plan only has the Start and Finish actions;
     \item A set of \textbf{ordering constraints} between pairs of actions in the form \\ $A \prec B$;
-    \item \textbf{Casual links} from outcome of one action to precondition of another \\ $A \xrightarrow{\text{p}} B$ (A achieves p for B);
+    \item \textbf{Casual links} from outcome of one action to precondition of another \\ $A \xrightarrow{\text{p}} B$ (A achieves p for B); this is NOT the same thing as an ordering constraint;
     \item \textbf{Open preconditions}: preconditions of an action not yet casually linked;
 
 \end{itemize}
@@ -255,12 +288,11 @@ A plan is said to be consistent if:
 \begin{itemize}
     \item There are \textbf{no cycles}  e.g. $A \prec B$ and $B \prec A$;
     \item There are \textbf{no conflicts}: \\
-        If we have $A \xrightarrow{\text{p}} B$ (A achieves p for B) and it exists another action $C$ that has effect $\neg p$ which undoes the effect of $A$, we have a conflict if $C$ is between $A$ and $B$: \\
-        $A \prec C$ and $C \prec B$
+        If we have $A \xrightarrow{\text{p}} B$ (A achieves p for B) and it exists another action $C$ that has effect $\neg p$ which undoes the effect of $A$, we have a conflict if $C$ is between $A$ and $B$. In this case, C is called a \textbf{clobber}: $A \prec C$ and $C \prec B$\\
         We can solve it by applying:
         \begin{itemize}[label=$\bullet$]
-            \item \textbf{Demotion} $C \prec A$;
-            \item \textbf{Promotion} $B \prec C$;            
+            \item \textbf{Demotion} $C \prec A$ (put the clobber before A);
+            \item \textbf{Promotion} $B \prec C$ (put the clobber after B);
         \end{itemize}
 \end{itemize}
 
@@ -296,7 +328,7 @@ POP depends on how it chooses the action each time to fulfill the open precondit
 
 \section{Hierarchical Task Network Planning (HTN)}
 
-The planning methods of the preceding chapters all operate with a fixed set of atomic actions. this approach is not sustainable since modern problems require thousands of actions. It is important to focus on the big picture and think about the overall strategy, rather than getting bogged down in the details of individual actions. One way to do this is to use a technique called \textbf{hierarchical decomposition}, which involves \textbf{breaking down a complex problem into smaller, more manageable parts}. The key benefit of this approach is that at each level of the hierarchy, there are fewer activities to consider, which makes it easier to find the most efficient way to arrange them for the current problem. This approach can reduce the computational cost and increase the chances of success in finding the correct way to achieve the goal. \\
+The planning methods analyzed before all operate with a fixed set of atomic actions. This approach is not sustainable since modern problems require thousands of actions. It is important to focus on the big picture and think about the overall strategy, rather than getting bogged down in the details of individual actions. One way to do this is to use a technique called \textbf{hierarchical decomposition}, which involves \textbf{breaking down a complex problem into smaller, more manageable parts}. The key benefit of this approach is that at each level of the hierarchy, there are fewer activities to consider, which makes it easier to find the most efficient way to arrange them for the current problem. This approach can reduce the computational cost and increase the chances of success in finding the correct way to achieve the goal. \\
 
 Planning proceeds by decomposing non-primitive tasks recursively into smaller subtasks, until primitive tasks are obtained.
 
@@ -306,30 +338,50 @@ Each HLA has one or more possible refinements, into a sequence of actions, each 
 HLA. We can say, then, that a \textbf{high-level plan achieves the goal from a given state if at least
 one of its implementations achieve the goal from that state}.
 
+\begin{itemize}
+    \item \textbf{Primitive actions (A)} (as in classical planning) can be executed by the agent directly;
+    \item \textbf{High-level actions (HLA)} cannot be executed by the agent, but have one or more \textbf{refinements} into sequences of actions.
+\end{itemize}
+
+An implementation of a \textbf{High level plan (HLP)} is the concatenation of the implementations of each HLA in the sequence.
+
 \section{Search for plans}
 
 \begin{itemize}
-    \item If an HLA has \textbf{exactly one implementation}, then we can compute the preconditions-effects of the HLA exactly as if it were a primitive action: we just need to consider the sequence of primitive actions that compose it. 
+    \item If an HLA has \textbf{exactly one implementation}, then we can compute the preconditions-effects of the HLA and treat it as if it were a primitive action: we just need to consider the sequence of primitive actions that compose it. 
     
-    \item An HLA has \textbf{multiple, different, implementations}
+    \item If an HLA has \textbf{multiple, different, implementations} we need to search among all the implementations.
     
     For example, in a "Hawaii Vacation" scenario, one HLA could be "move to the airport" which could have two different implementations: "take bus" and "take taxi". 
-    
-    We need to search among all the implementations.
+
 \end{itemize}
 
 \newpage
 
 \subsection{How to search for primitive solutions?}
 
-The \textbf{hierarchical search} refines HLA from the initial abstract specification to a sequence of primitives:
+One way to find a plan is by using the \textbf{hierarchical search}. The hierarchical search refines HLA from the initial abstract specification to a sequence of primitives:
 
 \begin{itemize}
     \item Repeatedly choose an HLA in the current plan and replace it with one of its refinements;
     \item The goal is checked when the plan is refined to a sequence of primitive actions;
 \end{itemize}
 
-This is computationally expensive. We could \textbf{search for abstract solutions instead}.
+This is a naive approach and computationally expensive. Complexity is:
+
+\begin{equation}
+    r^{\frac{d-1}{k-1}}
+\end{equation}
+
+Where:
+
+\begin{center}
+    $d$ is the length of the solution;\\
+    $r$ is the number of refinements;\\
+    $k$ is the length (max) of the refinements;
+\end{center}
+
+We could \textbf{search for abstract solutions instead}.
 
 \subsection{Search for abstract solutions}
 
@@ -343,7 +395,28 @@ The planner should be capable to determine that the HLA (e.g. "take bus" and "ta
 
 \subsection{Conservative approach}
 
-A solution might be to include only the positive effects that are achieved for \textbf{every} implementation of the HLA and the negative effects of \textbf{any} implementation.
+A solution might be to include only the positive effects that are achieved by \textbf{every} implementation of the HLA and the negative effects of \textbf{any} implementation.
+
+\newpage
+
+\subsection{Demonic and Angelic non-determinism}
+
+Demonic and angelic non-determinism are two concepts related to non-deterministic actions or choices in high-level planning. These concepts describe different approaches to handling uncertainty or multiple possible outcomes during plan execution.
+
+\begin{itemize}
+    \item \textbf{Demonic non-determinism} represents a pessimistic or adversarial perspective. In this approach, non-deterministic choices are resolved in favor of the worst possible outcome or the choice that maximizes the risk. The term "demonic" refers to the notion of an adversary trying to undermine the success of the plan.
+
+    When a plan contains demonic non-determinism, it assumes that the environment will always behave in the worst possible way, and the plan must be designed to handle all potential negative outcomes. \textbf{This approach typically leads to conservative plans that consider and account for potential failures or uncertainties}.
+
+    Demonic non-determinism is often used in safety-critical systems or situations where risks and failure avoidance are critical. By assuming the worst-case scenario, planners can ensure that the plan will handle even the most challenging or unfavorable conditions.
+
+\item \textbf{Angelic non-determinism} takes an optimistic or benevolent perspective. In this approach, non-deterministic choices are resolved in favor of the best possible outcome or the choice that maximizes the reward. The term "angelic" refers to the idea of an agent or entity that supports and aids the success of the plan.
+
+    When a plan contains angelic non-determinism, it assumes that the environment will behave in a way that is most favorable to achieving the desired goal. The plan can leverage this assumption to make optimistic choices and optimize for the best possible outcomes.
+
+    Angelic non-determinism is often used in scenarios where there are multiple possible paths to success, and the planner seeks to find the most efficient or optimal solution. It allows for more flexible and creative planning, as the planner can make choices that maximize the overall benefit or reward without being overly concerned about potential failures.
+
+\end{itemize}
 
 \newpage
 
@@ -360,8 +433,10 @@ Given a sequence of HLAs, it achieves the goal \textbf{if its reachable set inte
 There are two descriptions which are kind of a upper/lower bound for the reachable set:
 
 \begin{itemize}
-    \item \textbf{Optimistic}: may overstate the reachable set of an HLA;
-    \item \textbf{Pessimistic}: may understate the reachable set of an HLA;
+    \item \textbf{Optimistic} reachable sets are a way to describe the set of states that a system can reach under the best-case scenario assumption.
+    In other words, the optimistic reachable set assumes that all external factors and disturbances will be in the system's favor, leading to the largest possible set of reachable states. This may overstate the actual reachable set of an HLA.
+    \item \textbf{Pessimistic} reachable sets describe the set of states that a system can reach under the  worst-case scenario assumption.
+    In this approach, it is assumed that all external factors and disturbances will be unfavorable to the system, leading to the smallest possible set of reachable states. This may understate the reachable set of an HLA.
 \end{itemize}
 
 \begin{flushleft}

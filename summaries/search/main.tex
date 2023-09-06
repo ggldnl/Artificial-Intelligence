@@ -77,7 +77,7 @@ A strategy is defined by picking the order of node expansion.
 
 \begin{itemize}
     \item \textbf{completeness}: a search algorithm is said to be complete if for any random input it guarantees to return a solution if at least one solution exists;
-    \item \textbf{optimality}: a search algorithm is said to be optimal if it is guaranteed that the solution found is the best one (lowest path cost) among other; 
+    \item \textbf{optimality}: a search algorithm is said to be optimal if it is guaranteed that the solution found is the best one (lowest path cost) among others; 
     \item \textbf{Time complexity}: time complexity measures the time an algorithm takes to complete a task;
     \item \textbf{Space complexity}: space complexity measures the storage space required for an algorithm at any point during the search;
 \end{itemize}
@@ -135,7 +135,7 @@ Algorithms have no additional information on the goal node other than the ones p
 
 The tree is explored looking first at the root node, then at all its neighbors, then at the next level neighbors and so on. This process continues until all the nodes in the tree have been explored. \\
 
-The iterative implementation uses a \textbf{queue} (\textbf{FIFO} structure). It is complete and optimal: that means that it will find the shallower solution, it it exists, with the minimum amount of actions. It finds the optimal solution in $O(b^d)$, scanning the entire tree, and occupies $O(b^d)$ of memory.
+The iterative implementation uses a \textbf{queue} (\textbf{FIFO} structure). It is complete and optimal: that means that it will find the shallower solution, if it exists, with the minimum amount of actions. It finds the optimal solution in $O(b^d)$, scanning the entire tree, and occupies $O(b^d)$ of memory.
 
 \begin{center}
     \textit{frontier = queue}
@@ -173,7 +173,7 @@ It is NOT complete since it fails in infinite-depth spaces or spaces with loops.
 
 \subsection{Depth-limited search (DLS)}
 
-This search is like the Depth-first search but there is a limit in the tree's depth. In this way, the search process cannot continue infinitely. If there is not a solution in the subtree considered, the algorithm will not be able to find any solution, and is therefore NOT complete. It is not optimal for the same reason. It finds a solution in $O(b^d)$ if present and occupies $O(b*l)$ memory ($l$ being the depth limit).
+This search is like the Depth-first search but there is a limit in the tree's depth. In this way, the search process cannot continue infinitely. If there is not a solution in the subtree considered, the algorithm will not be able to find any solution, and is therefore NOT complete. It is not optimal for the same reason. It finds a solution in $O(b^l)$ if present and occupies $O(b*l)$ memory ($l$ being the depth limit).
 
 \subsection{Iterative-deepening search (IDS)}
 
@@ -468,7 +468,7 @@ F-contour is important in $A^*$ algorithm as it can help to prune search space b
     Contour $i$ has all nodes with $f = f_i$, where $f_i < f_{i+1}$
 \end{center}
 
-\subsection{Iterative-deepening $A^*$ ($IDA^*$)}
+\subsection{Iterative Deepening $A^*$ ($IDA^*$)}
 
 $IDA^*$ gives us the benefits of $A^*$ (completeness and optimality) without the requirement to keep all reached states in memory, at a cost of visiting some states multiple times; it is, for this reason, very commonly used for problems that do not fit in memory. \\
 
@@ -488,9 +488,9 @@ Both algorithms have their own advantages and disadvantages depending on the pro
 
 In general, $IDA^*$ is considered to be more efficient than RBFS when the heuristic function is consistent and admissible, and when the branching factor of the search space is moderate or low. \\
 
-In contrast, RBFS is considered to be more efficient than $IDA^*$ when the heuristic function is highly inconsistent or inadmissible, and when the branching factor of the search space is high.
+In contrast, RBFS is considered to be more efficient than $IDA^*$ when the heuristic function is highly inconsistent or inadmissible ($A^*$ and thus $IDA^*$ highly depends on the heuristic function), and when the branching factor of the search space is high.
 
-\subsection{$SMA^*$}
+\subsection{Simplify Memory Bounded $A^*$ ($SMA^*$)}
 
 \begin{center}
     $IDA^*$ uses too little memory: only the current f-value;
