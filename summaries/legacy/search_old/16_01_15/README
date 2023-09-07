@@ -1,3 +1,0 @@
-error_1 at page 2: cost to reach C is less if you reach it from S (g(n) = 3, f(n) = 3 + 3 = 6) than if you reach it from B (g(n) = 2 + 1 + 1 = 4, f(n) = 4 + 3 = 7); we don't need to update the pointer to C (still S -> C)
-
-error_2 at page 4: nodes in the closed set repeated multiple times
